@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Лаура](https://up.htmlacademy.ru/ecmascript/12/user/1351731).
-* Наставник: `Неизвестно`.
+* Наставник: `Святослав Родионов`.
 
 ---
 
