@@ -1,4 +1,6 @@
-const generateFilmDetails = (filmCard, start, end) => {
+import {createElement} from "../util";
+
+const generatePopup = (filmCard, start, end) => {
   return Object.entries(filmCard)
     .slice(start, end)
     .map(([detailsItemName, detailsValue]) => {
@@ -9,7 +11,7 @@ const generateFilmDetails = (filmCard, start, end) => {
     });
 };
 
-const createFilmDetailsTableItem = (detail) => {
+const createPopupTableItem = (detail) => {
   const {detailsItem, detailsItemValue} = detail;
   return ` <tr class="film-details__row">
   <td class="film-details__term">${detailsItem}</td>
@@ -17,8 +19,8 @@ const createFilmDetailsTableItem = (detail) => {
 </tr>`;
 };
 
-const createDetailsTable = (detailsTableItems) => {
-  return detailsTableItems.map((detailsTableItem) => createFilmDetailsTableItem(detailsTableItem)).join(``);
+const createPopupTable = (detailsTableItems) => {
+  return detailsTableItems.map((detailsTableItem) => createPopupTableItem(detailsTableItem)).join(``);
 };
 
 const createFilmGenre = (genre) => {
@@ -50,7 +52,7 @@ const createComments = (comments) => {
   return comments.map((comment) => createComment(comment)).join(``);
 };
 
-export const createFilmDetails = (filmCard) => {
+const createPopup = (filmCard) => {
   const {poster, ageRating, name, originalName, rating, genre, description, comments} = filmCard;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
@@ -77,7 +79,7 @@ export const createFilmDetails = (filmCard) => {
                 </div>
               </div>
               <table class="film-details__table">
-              ${createDetailsTable(generateFilmDetails(filmCard, 4, 10))} 
+              ${createPopupTable(generatePopup(filmCard, 4, 10))} 
               ${createFilmGenre(genre)}
               </table>
               <p class="film-details__film-description">
@@ -140,3 +142,26 @@ export const createFilmDetails = (filmCard) => {
       </form>
     </section>`;
 };
+
+export default class Popup {
+  constructor(filmCard) {
+    this._filmCard = filmCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createPopup(this._filmCard);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
