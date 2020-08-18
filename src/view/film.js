@@ -1,15 +1,19 @@
-export const createFilmCard = () => {
+import {createElement} from "../util";
+const COUNT_SIMBOL_DESCRIPTION = 140;
+
+const createFilmCard = (filmCard) => {
+  const {poster, name, rating, date, Runtime, genre, description, comments} = filmCard;
   return `<article class="film-card">
-    <h3 class="film-card__title">The Dance of Life</h3>
-    <p class="film-card__rating">8.3</p>
+    <h3 class="film-card__title">${name}</h3>
+    <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">1929</span>
-      <span class="film-card__duration">1h 55m</span>
-      <span class="film-card__genre">Musical</span>
+      <span class="film-card__year">${date.slice(date.length - 5)}</span>
+      <span class="film-card__duration">${Runtime}</span>
+      <span class="film-card__genre">${genre}</span>
     </p>
-    <img src="./images/posters/the-dance-of-life.jpg" alt="" class="film-card__poster">
-    <p class="film-card__description">Burlesque comic Ralph "Skid" Johnson (Skelly), and specialty dancer Bonny Lee King (Carroll), end up together on a cold, rainy night at a tr…</p>
-    <a class="film-card__comments">5 comments</a>
+    <img src=${poster} alt="" class="film-card__poster">
+    <p class="film-card__description">${description.length > COUNT_SIMBOL_DESCRIPTION ? description.slice(0, 140) + `...` : description}</p>
+    <a class="film-card__comments">${comments.length} comments</a>
     <form class="film-card__controls">
       <button class="film-card__controls-item button film-card__controls-item--add-to-watchlist">Add to watchlist</button>
       <button class="film-card__controls-item button film-card__controls-item--mark-as-watched">Mark as watched</button>
@@ -17,3 +21,26 @@ export const createFilmCard = () => {
     </form>
   </article>`;
 };
+
+export default class FilmCard {
+  constructor(filmCard) {
+    this._filmCard = filmCard;
+    this._element = null;
+  }
+
+  getTemplate() {
+    return createFilmCard(this._filmCard);
+  }
+
+  getElement() {
+    if (!this._element) {
+      this._element = createElement(this.getTemplate());
+    }
+
+    return this._element;
+  }
+
+  removeElement() {
+    this._element = null;
+  }
+}
