@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../util";
+import {getRandomInteger} from "../utils/common";
 import {
   POSTARS,
   NAMES_FILM,
@@ -27,7 +27,7 @@ const generateRandomLengthString = (array, maxValue, separator) => {
   return string;
 };
 
-export const generateComment = () => {
+const generateComments = () => {
   const commentsCount = getRandomInteger(0, 5);
   const comments = [];
   for (let i = 0; i < commentsCount; i++) {
@@ -56,7 +56,7 @@ export const generateFilmCard = () => {
     Country: COUNTRY[getRandomInteger(0, COUNTRY.length - 1)],
     genre: GERNE[getRandomInteger(0, GERNE.length - 1)],
     description: generateRandomLengthString(DESCRIPTIONS, 5, ` `),
-    comments: generateComment(),
+    comments: generateComments(),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
     isHistory: Boolean(getRandomInteger(0, 1)),
     isFavorites: Boolean(getRandomInteger(0, 1)),

@@ -1,4 +1,5 @@
-import {createElement} from "../util";
+import AbstractView from "./abstract.js";
+
 const COUNT_SIMBOL_DESCRIPTION = 140;
 
 const createFilmCard = (filmCard) => {
@@ -22,25 +23,26 @@ const createFilmCard = (filmCard) => {
   </article>`;
 };
 
-export default class FilmCard {
+export default class FilmCard extends AbstractView {
   constructor(filmCard) {
+    super();
     this._filmCard = filmCard;
-    this._element = null;
+    this._popupClickHandler = this._popupClickHandler.bind(this);
+  }
+
+  _popupClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.popupClick();
+  }
+
+  setPopupClickHandler(callback) {
+    this._callback.popupClick = callback;
+    [`.film-card__title`, `.film-card__comments`, `.film-card__poster`].forEach((value) =>
+      this.getElement().querySelector(value).addEventListener(`click`, this._popupClickHandler)
+    );
   }
 
   getTemplate() {
     return createFilmCard(this._filmCard);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }

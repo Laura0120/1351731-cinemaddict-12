@@ -1,4 +1,4 @@
-import {createElement} from "../util";
+import AbstractView from "./abstract.js";
 
 const generatePopup = (filmCard, start, end) => {
   return Object.entries(filmCard)
@@ -48,9 +48,7 @@ const createComment = (comment) => {
 </li>`;
 };
 
-const createComments = (comments) => {
-  return comments.map((comment) => createComment(comment)).join(``);
-};
+const createComments = (comments) => comments.map((comment) => createComment(comment)).join(``);
 
 const createPopup = (filmCard) => {
   const {poster, ageRating, name, originalName, rating, genre, description, comments} = filmCard;
@@ -143,25 +141,24 @@ const createPopup = (filmCard) => {
     </section>`;
 };
 
-export default class Popup {
+export default class Popup extends AbstractView {
   constructor(filmCard) {
+    super();
     this._filmCard = filmCard;
-    this._element = null;
+    this._popupCloseClickHandler = this._popupCloseClickHandler.bind(this);
+  }
+
+  _popupCloseClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.popupCloseClick();
+  }
+
+  setPopupCloseClickHandler(callback) {
+    this._callback.popupCloseClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseClickHandler);
   }
 
   getTemplate() {
     return createPopup(this._filmCard);
-  }
-
-  getElement() {
-    if (!this._element) {
-      this._element = createElement(this.getTemplate());
-    }
-
-    return this._element;
-  }
-
-  removeElement() {
-    this._element = null;
   }
 }
