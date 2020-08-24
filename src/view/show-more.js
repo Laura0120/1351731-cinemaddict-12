@@ -1,8 +1,6 @@
 import AbstractView from "./abstract.js";
 
-const createButtonShowMore = () => {
-  return `<button class="films-list__show-more">Show more</button>`;
-};
+const createButtonShowMore = () => `<button class="films-list__show-more">Show more</button>`;
 
 export default class ButtonShowMore extends AbstractView {
   constructor() {
