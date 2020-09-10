@@ -1,8 +1,8 @@
 import ContentContainerView from "../view/container.js";
 import FilmCardPresenter from "./film.js";
 import ButtonShowMoreView from "../view/show-more.js";
-import { render, RenderPosition, remove } from "../utils/render.js";
-import { updateItem } from "../utils/common.js";
+import {render, RenderPosition, remove} from "../utils/render.js";
+import {updateItem} from "../utils/common.js";
 const FILM_CARD_COUNT_PER_STEP = 5;
 // const FILM_EXTRA_CARD_COUNT = 2;
 

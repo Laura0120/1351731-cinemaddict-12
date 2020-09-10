@@ -3,7 +3,7 @@ import AbstractView from "./abstract.js";
 const COUNT_SIMBOL_DESCRIPTION = 140;
 
 const createFilmCard = (filmCard) => {
-  const { poster, name, rating, date, Runtime, genre, description, comments } = filmCard;
+  const {poster, name, rating, date, Runtime, genre, description, comments} = filmCard;
   return `<article class="film-card" >
     <h3 class="film-card__title">${name}</h3>
     <p class="film-card__rating">${rating}</p>

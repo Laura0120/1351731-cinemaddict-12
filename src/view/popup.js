@@ -12,7 +12,7 @@ const generatePopup = (filmCard, start, end) => {
 };
 
 const createPopupTableItem = (detail) => {
-  const { detailsItem, detailsItemValue } = detail;
+  const {detailsItem, detailsItemValue} = detail;
   return ` <tr class="film-details__row">
   <td class="film-details__term">${detailsItem}</td>
   <td class="film-details__cell">${detailsItemValue}</td>
@@ -32,7 +32,7 @@ const createFilmGenre = (genre) => {
 };
 
 const createComment = (comment) => {
-  const { emoji, day, autor, text } = comment;
+  const {emoji, day, autor, text} = comment;
   return `<li class="film-details__comment">
   <span class="film-details__comment-emoji">
     <img src= ${emoji} width="55" height="55" alt="emoji-smile">
@@ -51,7 +51,7 @@ const createComment = (comment) => {
 const createComments = (comments) => comments.map((comment) => createComment(comment)).join(``);
 
 const createPopup = (filmCard) => {
-  const { poster, ageRating, name, originalName, rating, genre, description, comments, emoji } = filmCard;
+  const {poster, ageRating, name, originalName, rating, genre, description, comments, emoji} = filmCard;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">

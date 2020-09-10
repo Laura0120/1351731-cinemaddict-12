@@ -1,4 +1,4 @@
-import { getRandomInteger } from "../utils/common";
+import {getRandomInteger} from "../utils/common";
 import {
   POSTARS,
   NAMES_FILM,

@@ -3,9 +3,9 @@ import FilterView from "./view/filter.js";
 import SortView from "./view/sort.js";
 import MovieListPresenter from "./presenter/movie-list.js";
 import FooterStatisticsView from "./view/footer-statistics.js";
-import { render, RenderPosition } from "./utils/render.js";
-import { generateFilmCard } from "./mock/film";
-import { generateFilter } from "./mock/filter";
+import {render, RenderPosition} from "./utils/render.js";
+import {generateFilmCard} from "./mock/film";
+import {generateFilter} from "./mock/filter";
 
 const FILM_CARD_COUNT = 15;
 
