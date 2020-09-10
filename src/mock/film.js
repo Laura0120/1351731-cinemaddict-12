@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils/common";
+import { getRandomInteger } from "../utils/common";
 import {
   POSTARS,
   NAMES_FILM,
@@ -17,8 +17,11 @@ import {
   AGE_REATING,
   ACTOR,
 } from "./const";
-
-const generateId = () => Date.now() + parseInt(Math.random() * 10000, 10);
+let id = Date.now();
+const generateId = () => {
+  id += 1;
+  return id;
+};
 
 const generateRandomLengthString = (array, maxValue, separator) => {
   const stringLength = getRandomInteger(1, maxValue);

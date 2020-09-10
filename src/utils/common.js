@@ -5,16 +5,12 @@ export const getRandomInteger = (a = 0, b = 1) => {
   return Math.round(lower + Math.random() * (upper - lower));
 };
 
-export const updateItem = (items, update) => {
-  const index = items.findIndex((item) => item.id === update.id);
+export const updateItem = (array, updatedItem) => {
+  const index = array.findIndex((item) => item.id === updatedItem.id);
 
   if (index === -1) {
-    return items;
+    return array;
   }
 
-  return [
-    ...items.slice(0, index),
-    update,
-    ...items.slice(index + 1)
-  ];
+  return [...array.slice(0, index), updatedItem, ...array.slice(index + 1)];
 };
