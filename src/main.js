@@ -17,8 +17,8 @@ const siteMainElement = bodyElement.querySelector(`.main`);
 const footerStatisticsElement = bodyElement.querySelector(`.footer__statistics`);
 const movieListPresenter = new MovieListPresenter(siteMainElement);
 
-render(siteHeaderElement, new UserProfile(), RenderPosition.BEFOREEND);
-render(siteMainElement, new FilterView(filters), RenderPosition.BEFOREEND);
-render(siteMainElement, new SortView(), RenderPosition.BEFOREEND);
+render(siteHeaderElement, new UserProfile(), RenderPosition.BEFORE_END);
+render(siteMainElement, new FilterView(filters), RenderPosition.BEFORE_END);
+render(siteMainElement, new SortView(), RenderPosition.BEFORE_END);
 movieListPresenter.init(filmCards);
-render(footerStatisticsElement, new FooterStatisticsView(FILM_CARD_COUNT), RenderPosition.AFTERBEGIN);
+render(footerStatisticsElement, new FooterStatisticsView(FILM_CARD_COUNT), RenderPosition.AFTER_BEGIN);

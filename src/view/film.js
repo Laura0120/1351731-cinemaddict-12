@@ -4,7 +4,7 @@ const COUNT_SIMBOL_DESCRIPTION = 140;
 
 const createFilmCard = (filmCard) => {
   const {poster, name, rating, date, Runtime, genre, description, comments} = filmCard;
-  return `<article class="film-card">
+  return `<article class="film-card" >
     <h3 class="film-card__title">${name}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
@@ -28,6 +28,11 @@ export default class FilmCard extends AbstractView {
     super();
     this._filmCard = filmCard;
     this._popupClickHandler = this._popupClickHandler.bind(this);
+    this.clickHandler = this.clickHandler.bind(this);
+  }
+
+  getTemplate() {
+    return createFilmCard(this._filmCard);
   }
 
   _popupClickHandler(evt) {
@@ -47,7 +52,7 @@ export default class FilmCard extends AbstractView {
     this.getElement().addEventListener(`click`, this._popupClickHandler);
   }
 
-  getTemplate() {
-    return createFilmCard(this._filmCard);
+  clickHandler(callback, selector) {
+    this.getElement().querySelector(selector).addEventListener(`click`, callback);
   }
 }

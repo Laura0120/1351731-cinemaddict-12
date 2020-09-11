@@ -1,4 +1,4 @@
-import AbstractView from "./abstract.js";
+import Smart from "./smart.js";
 
 const generatePopup = (filmCard, start, end) => {
   return Object.entries(filmCard)
@@ -51,7 +51,7 @@ const createComment = (comment) => {
 const createComments = (comments) => comments.map((comment) => createComment(comment)).join(``);
 
 const createPopup = (filmCard) => {
-  const {poster, ageRating, name, originalName, rating, genre, description, comments} = filmCard;
+  const {poster, ageRating, name, originalName, rating, genre, description, comments, emoji} = filmCard;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -107,7 +107,9 @@ const createPopup = (filmCard) => {
             </ul>
     
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label"></div>
+              <div for="add-emoji" class="film-details__add-emoji-label">
+              ${emoji !== null ? `<img src="../../images/emoji/${emoji}.png" width="100%" height="100%" alt="emoji-smile"></img>` : ``}
+              </div>
     
               <label class="film-details__comment-label">
                 <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
@@ -141,24 +143,75 @@ const createPopup = (filmCard) => {
     </section>`;
 };
 
-export default class Popup extends AbstractView {
-  constructor(filmCard) {
+export default class Popup extends Smart {
+  constructor(filmCard, changeData) {
     super();
-    this._filmCard = filmCard;
-    this._popupCloseClickHandler = this._popupCloseClickHandler.bind(this);
-  }
-
-  _popupCloseClickHandler(evt) {
-    evt.preventDefault();
-    this._callback.popupCloseClick();
-  }
-
-  setPopupCloseClickHandler(callback) {
-    this._callback.popupCloseClick = callback;
-    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._popupCloseClickHandler);
+    this._data = filmCard;
+    this._changeData = changeData;
+    this._сloseClickHandler = this._сloseClickHandler.bind(this);
+    this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
+    this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
+    this._handleWatchedClick = this._handleWatchedClick.bind(this);
+    this._emojiClickHandler = this._emojiClickHandler.bind(this);
+    this._setInnerHandlers();
   }
 
   getTemplate() {
-    return createPopup(this._filmCard);
+    return createPopup(this._data);
+  }
+
+  restoreHandlers() {
+    this.setCloseClickHandler(this._callback.popupCloseClick);
+    this.setFavoriteClickHandler(this._callback.favoriteClick);
+    this.setWatchlistClickHandler(this._callback.watchlistClick);
+    this.setWatchedClickHandler(this._callback.watchedClick);
+    this._setInnerHandlers();
+  }
+
+  _setInnerHandlers() {
+    this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, this._emojiClickHandler);
+  }
+
+  _сloseClickHandler(evt) {
+    this._callback.popupCloseClick(evt);
+  }
+
+  _handleFavoriteClick() {
+    this._callback.favoriteClick();
+  }
+
+  _handleWatchlistClick() {
+    this._callback.watchlistClick();
+  }
+
+  _handleWatchedClick() {
+    this._callback.watchedClick();
+  }
+
+  _emojiClickHandler(evt) {
+    evt.preventDefault();
+    this.updateData({
+      emoji: evt.target.value,
+    });
+  }
+
+  setCloseClickHandler(callback) {
+    this._callback.popupCloseClick = callback;
+    this.getElement().querySelector(`.film-details__close-btn`).addEventListener(`click`, this._сloseClickHandler);
+  }
+
+  setFavoriteClickHandler(callback) {
+    this._callback.favoriteClick = callback;
+    this.getElement().querySelector(`#favorite`).addEventListener(`change`, this._handleFavoriteClick);
+  }
+
+  setWatchlistClickHandler(callback) {
+    this._callback.watchlistClick = callback;
+    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, this._handleWatchlistClick);
+  }
+
+  setWatchedClickHandler(callback) {
+    this._callback.watchedClick = callback;
+    this.getElement().querySelector(`#watched`).addEventListener(`change`, this._handleWatchedClick);
   }
 }

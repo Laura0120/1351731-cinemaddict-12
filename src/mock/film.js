@@ -17,6 +17,11 @@ import {
   AGE_REATING,
   ACTOR,
 } from "./const";
+let id = Date.now();
+const generateId = () => {
+  id += 1;
+  return id;
+};
 
 const generateRandomLengthString = (array, maxValue, separator) => {
   const stringLength = getRandomInteger(1, maxValue);
@@ -45,6 +50,7 @@ const generateComments = () => {
 
 export const generateFilmCard = () => {
   return {
+    id: generateId(),
     poster: `../../${POSTARS[getRandomInteger(0, POSTARS.length - 1)]}`,
     name: NAMES_FILM[getRandomInteger(0, NAMES_FILM.length - 1)],
     originalName: NAMES_FILM[getRandomInteger(0, NAMES_FILM.length - 1)],
@@ -59,8 +65,9 @@ export const generateFilmCard = () => {
     description: generateRandomLengthString(DESCRIPTIONS, 5, `. `),
     comments: generateComments(),
     isWatchlist: Boolean(getRandomInteger(0, 1)),
-    isHistory: Boolean(getRandomInteger(0, 1)),
-    isFavorites: Boolean(getRandomInteger(0, 1)),
+    isWatched: Boolean(getRandomInteger(0, 1)),
+    isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: AGE_REATING[getRandomInteger(0, AGE_REATING.length - 1)] + `+`,
+    emoji: null,
   };
 };
