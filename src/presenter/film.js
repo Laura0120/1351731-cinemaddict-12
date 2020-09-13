@@ -1,6 +1,6 @@
 import FilmCardView from "../view/film.js";
 import PopupView from "../view/popup.js";
-import {render, RenderPosition, replace, remove} from "../utils/render.js";
+import { render, RenderPosition, replace, remove } from "../utils/render.js";
 
 const ViewType = {
   DEFAULT: `DEFAULT`,
@@ -82,15 +82,15 @@ export default class FilmCard {
   }
 
   _handleFavoriteClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
+    this._changeData(Object.assign({}, this._filmCard, { isFavorite: !this._filmCard.isFavorite }));
   }
 
   _handleWatchlistClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
+    this._changeData(Object.assign({}, this._filmCard, { isWatchlist: !this._filmCard.isWatchlist }));
   }
 
   _handleWatchedClick() {
-    this._changeData(Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
+    this._changeData(Object.assign({}, this._filmCard, { isWatched: !this._filmCard.isWatched }));
   }
 
   _handlePopupClick() {
