@@ -29,10 +29,17 @@ export const COMMENTS_TEXT = [
 ];
 
 export const COMMENTS_AUTOR = [`Tim Macoveev`, `John Doe`];
-export const COMMENTS_DATE = [`2019/12/31 23:59`, `2 days ago`, `Today`];
-export const DATE_OF_RELEASE = [`01 April 1995`, `01 April 1929`, `01 April 1933`, `01 April 1955`, `01 April 1964`];
+export const COMMENTS_DATE = [
+  `2020-09-15T14:24:09.773Z`,
+  `2020-09-13T10:24:09.773Z`,
+  `2020-07-13T10:24:09.773Z`,
+  `2019-09-13T10:24:09.773Z`,
+  `2019-09-15T10:24:09.773Z`,
+  `2020-09-16T00:20:09.773Z`,
+];
+export const DATE_OF_RELEASE = [`1995-04-01`, `1929-04-01`, `1933-04-22`];
 export const RATING = [`8.3`, `3.2`, `9.0`, `2.3`, `6.3`];
-export const DURATION = [`1h 55m`, `54m`, `1h 59m`, `1h 21m`, `1h 16m`];
+export const DURATION = [`115`, `54`, `119`, `81`, `76`];
 export const GENRE = [`Musical`, `Western`, `Drama`, `Comedy`, `Cartoon`];
 export const DIRECTOR = [`Quentin Tarantino`, `Wes Anderson`, `Christopher Nolan`, `Denis Villeneuve`, `Martin Scorsese`];
 export const WRITERS = [`Billy Wilder`, `Robert Townen`, `Francis Ford Coppola`, `William Goldman`, `Charlie Kaufman`];

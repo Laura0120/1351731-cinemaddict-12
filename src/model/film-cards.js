@@ -1,5 +1,4 @@
-import Observer from "../utils/observer.js";
-import { UpdateType } from "../const";
+import Observer from '../utils/observer.js';
 
 export default class FilmCards extends Observer {
   constructor() {
@@ -15,7 +14,7 @@ export default class FilmCards extends Observer {
     return this._filmCards;
   }
 
-  updateFilmCards(updatedFilmCard) {
+  updateFilmCards(updateType, updatedFilmCard) {
     const index = this._filmCards.findIndex((filmCard) => filmCard.id === updatedFilmCard.id);
 
     if (index === -1) {
@@ -24,6 +23,6 @@ export default class FilmCards extends Observer {
 
     this._filmCards = [...this._filmCards.slice(0, index), updatedFilmCard, ...this._filmCards.slice(index + 1)];
 
-    this._notify({ payload: updatedFilmCard });
+    this._notify(updateType, updatedFilmCard);
   }
 }

@@ -21,7 +21,7 @@ export const sortByDate = (filmCardA, filmCardB) => {
     return weight;
   }
 
-  return filmCardA.date.getTime() - filmCardB.date.getTime();
+  return filmCardB.date.diff(filmCardA.date, `seconds`);
 };
 
 export const sortByRating = (filmCardA, filmCardB) => {
@@ -31,5 +31,5 @@ export const sortByRating = (filmCardA, filmCardB) => {
     return weight;
   }
 
-  return filmCardA.rating - filmCardB.rating;
+  return filmCardB.rating - filmCardA.rating;
 };
