@@ -1,4 +1,4 @@
-import {getRandomInteger} from "../utils/common";
+import { getRandomInteger } from '../utils/common';
 import {
   POSTARS,
   NAMES_FILM,
@@ -16,11 +16,14 @@ import {
   COUNTRY,
   AGE_REATING,
   ACTOR,
-} from "./const";
+} from './const';
+import moment from 'moment';
+
 let id = Date.now();
-const generateId = () => {
+
+export const generateId = () => {
   id += 1;
-  return id;
+  return String(id);
 };
 
 const generateRandomLengthString = (array, maxValue, separator) => {
@@ -33,17 +36,19 @@ const generateRandomLengthString = (array, maxValue, separator) => {
   return string;
 };
 
+export const generateComment = (comment = {}) => ({
+  id: generateId(),
+  emoji: `../../${COMMENTS_EMOJI[getRandomInteger(0, COMMENTS_EMOJI.length - 1)]}`,
+  day: moment(COMMENTS_DATE[getRandomInteger(0, COMMENTS_DATE.length - 1)]),
+  autor: COMMENTS_AUTOR[getRandomInteger(0, COMMENTS_AUTOR.length - 1)],
+  text: COMMENTS_TEXT[getRandomInteger(0, COMMENTS_TEXT.length - 1)], ...comment,
+});
+
 const generateComments = () => {
   const commentsCount = getRandomInteger(0, 5);
   const comments = [];
   for (let i = 0; i < commentsCount; i++) {
-    const comment = {
-      emoji: `../../${COMMENTS_EMOJI[getRandomInteger(0, COMMENTS_EMOJI.length - 1)]}`,
-      day: COMMENTS_DATE[getRandomInteger(0, COMMENTS_DATE.length - 1)],
-      autor: COMMENTS_AUTOR[getRandomInteger(0, COMMENTS_AUTOR.length - 1)],
-      text: COMMENTS_TEXT[getRandomInteger(0, COMMENTS_TEXT.length - 1)],
-    };
-    comments.push(comment);
+    comments.push(generateComment());
   }
   return comments;
 };
@@ -58,8 +63,11 @@ export const generateFilmCard = () => {
     Director: DIRECTOR[getRandomInteger(0, DIRECTOR.length - 1)],
     Writers: WRITERS[getRandomInteger(0, WRITERS.length - 1)],
     Actors: generateRandomLengthString(ACTOR, 3, `, `),
-    date: DATE_OF_RELEASE[getRandomInteger(0, DATE_OF_RELEASE.length - 1)],
-    Runtime: DURATION[getRandomInteger(0, DURATION.length - 1)],
+    date: moment(DATE_OF_RELEASE[getRandomInteger(0, DATE_OF_RELEASE.length - 1)]),
+    runtime: moment
+      .utc()
+      .startOf('day')
+      .add({ minutes: DURATION[getRandomInteger(0, DURATION.length - 1)] }),
     Country: COUNTRY[getRandomInteger(0, COUNTRY.length - 1)],
     genre: GENRE[getRandomInteger(0, GENRE.length - 1)],
     description: generateRandomLengthString(DESCRIPTIONS, 5, `. `),
@@ -68,6 +76,5 @@ export const generateFilmCard = () => {
     isWatched: Boolean(getRandomInteger(0, 1)),
     isFavorite: Boolean(getRandomInteger(0, 1)),
     ageRating: AGE_REATING[getRandomInteger(0, AGE_REATING.length - 1)] + `+`,
-    emoji: null,
   };
 };
