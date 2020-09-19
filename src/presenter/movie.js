@@ -4,7 +4,6 @@ import Api from '../api.js';
 
 import { render, RenderPosition, replace, remove } from '../utils/render.js';
 import { UpdateType, UserAction } from '../const.js';
-import { generateComment } from '../mock/film';
 
 const ViewType = {
   DEFAULT: `DEFAULT`,

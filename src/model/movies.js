@@ -56,7 +56,7 @@ export default class Movies extends Observer {
       ageRating: movie.film_info.age_rating,
       country: movie.film_info.release.release_country,
       comments: comments
-        ? movie.comments.map((commentId) => comments.find((c) => c.id === commentId))
+        ? movie.comments.map((commentId) => comments.find((comment) => comment.id === commentId))
         : movie.comments.map((commentId) => ({ id: commentId })),
       runtime: movie.film_info.runtime,
       description: movie.film_info.description,

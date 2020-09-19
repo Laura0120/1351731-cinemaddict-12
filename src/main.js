@@ -8,9 +8,7 @@ import FilterModel from './model/filter.js';
 import Api from './api.js';
 import { render, RenderPosition, remove } from './utils/render.js';
 import { UpdateType, MenuItem } from './const.js';
-import FilmCard from './view/film.js';
 
-// const FILM_CARD_COUNT = 15;
 const AUTHORIZATION = `Basic gl2e508ga2406a `;
 const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
 
