@@ -1,16 +1,20 @@
 import FilmCardView from '../view/film.js';
 import PopupView from '../view/popup.js';
-import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {UpdateType, UserAction} from '../const.js';
-import {generateComment} from '../mock/film';
+import Api from '../api.js';
+
+import { render, RenderPosition, replace, remove } from '../utils/render.js';
+import { UpdateType, UserAction } from '../const.js';
 
 const ViewType = {
   DEFAULT: `DEFAULT`,
   POPUP: `POPUP`,
 };
 const bodyElement = document.querySelector(`body`);
+const AUTHORIZATION = `Basic gl2e508ga2406a `;
+const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
+const api = new Api(END_POINT, AUTHORIZATION);
 
-export default class FilmCard {
+export default class Movies {
   constructor(filmListContainer, changeData, changeViewType) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
@@ -86,30 +90,50 @@ export default class FilmCard {
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
+    this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      UpdateType.FILM_CARD,
+      Object.assign({}, this._filmCard, { isFavorite: !this._filmCard.isFavorite }),
+    );
   }
 
   _handleWatchlistClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
+    this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      UpdateType.FILM_CARD,
+      Object.assign({}, this._filmCard, { isWatchlist: !this._filmCard.isWatchlist }),
+    );
   }
 
   _handleWatchedClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
+    this._changeData(
+      UserAction.UPDATE_FILM_CARD,
+      UpdateType.FILM_CARD,
+      Object.assign({}, this._filmCard, { isWatched: !this._filmCard.isWatched }),
+    );
   }
 
   _handleDeleteComment(evt) {
-    const comments = this._filmCard.comments.filter((comment) => comment.id !== evt.target.dataset.id);
+    const comment = this._filmCard.comments.find((comment) => comment.id === evt.target.dataset.id);
 
-    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+    if (!comment) {
+      return;
+    }
+
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, { movieId: this._filmCard.id, comment });
   }
 
   _handleAddComment(comment) {
-    const comments = [...this._filmCard.comments, generateComment(comment)];
-
-    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, { movieId: this._filmCard.id, comment });
   }
 
   _handlePopupClick() {
+    api.getComments(this._filmCard.id).then((comments) => {
+      this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments }));
+    });
+    // .catch(() => {
+
+    // })
     this._popupComponent.updateElement();
     render(bodyElement, this._popupComponent, RenderPosition.BEFORE_END);
     this._changeViewType();

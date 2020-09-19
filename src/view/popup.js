@@ -1,9 +1,9 @@
 import he from 'he';
 import moment from 'moment';
 
-import {render, replace, RenderPosition} from '../utils/render.js';
+import { render, replace, RenderPosition } from '../utils/render.js';
 import Smart from './smart.js';
-import {DATE_FORMATS} from '../const';
+import { DATE_FORMATS } from '../const';
 
 const generatePopup = (filmCard, start, end) => {
   return Object.entries(filmCard)
@@ -19,7 +19,7 @@ const generatePopup = (filmCard, start, end) => {
       if (detailsItem === 'runtime') {
         return {
           detailsItem,
-          detailsItemValue: detailsItemValue.format(DATE_FORMATS.FILM_DURATION_VIEW),
+          detailsItemValue: moment.utc().startOf(`day`).add({ minutes: detailsItemValue }).format(DATE_FORMATS.FILM_DURATION_VIEW),
         };
       }
 
@@ -43,36 +43,41 @@ const createPopupTable = (detailsTableItems) => {
 };
 
 const createFilmGenre = (genre) => {
-  const filmGenre = genre.split(` `);
   return ` <tr class="film-details__row">
-  <td class="film-details__term">${filmGenre.length > 1 ? `Genres` : `Genre`}</td>
-  <td class="film-details__cell">${filmGenre.map((element) => `<span class="film-details__genre">${element}</span>`).join(``)}</td>
+  <td class="film-details__term">${genre.length > 1 ? `Genres` : `Genre`}</td>
+  <td class="film-details__cell">${genre.map((element) => `<span class="film-details__genre">${element}</span>`).join(` `)}</td>
 </tr>`;
 };
 
-const createComment = (comment) => {
-  const { emoji, day, autor, text, id } = comment;
-  const commentDate = moment().utc().diff(day, 'days') >= 2 ? day.format(DATE_FORMATS.COMMENT_DATE_VIEW) : day.fromNow();
+const createComment = (commentObj) => {
+  const { emotion, date, author, comment, id } = commentObj;
+
+  if (!comment) {
+    return;
+  }
+
+  const dateObj = moment(date);
+  const commentDate = moment().utc().diff(dateObj, 'days') >= 2 ? dateObj.format(DATE_FORMATS.COMMENT_DATE_VIEW) : dateObj.fromNow();
 
   return `<li class="film-details__comment">
-  <span class="film-details__comment-emoji">
-    <img src= ${emoji} width="55" height="55" alt="emoji-smile">
-  </span>
-  <div>
-    <p class="film-details__comment-text">${he.encode(text)}</p>
-    <p class="film-details__comment-info">
-      <span class="film-details__comment-author">${autor}</span>
-      <span class="film-details__comment-day">${commentDate}</span>
-      <button class="film-details__comment-delete" data-id="${id}">Delete</button>
-    </p>
-  </div>
-</li>`;
+    <span class="film-details__comment-emoji">
+      <img src="../../images/emoji/${emotion}.png" width="55" height="55" alt="emoji-smile">
+    </span>
+    <div>
+      <p class="film-details__comment-text">${he.encode(comment)}</p>
+      <p class="film-details__comment-info">
+        <span class="film-details__comment-author">${author}</span>
+        <span class="film-details__comment-day">${commentDate}</span>
+        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
+      </p>
+    </div>
+  </li>`;
 };
 
 const createComments = (comments) => comments.map((comment) => createComment(comment)).join(``);
 
-const createPopup = (filmCard) => {
-  const { poster, ageRating, name, originalName, rating, genre, description, comments, emoji } = filmCard;
+const createPopup = (movie) => {
+  const { poster, ageRating, alternativeTitle, title, rating, genre, description, comments, isWatched, isFavorite, isWatchlist } = movie;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -83,14 +88,14 @@ const createPopup = (filmCard) => {
             <div class="film-details__poster">
               <img class="film-details__poster-img" src="${poster}" alt="">
 
-              <p class="film-details__age">${ageRating}</p>
+              <p class="film-details__age">${ageRating + `+`}</p>
             </div>
 
             <div class="film-details__info">
               <div class="film-details__info-head">
                 <div class="film-details__title-wrap">
-                  <h3 class="film-details__title">${name}</h3>
-                  <p class="film-details__title-original">Original: ${originalName}</p>
+                  <h3 class="film-details__title">${alternativeTitle}</h3>
+                  <p class="film-details__title-original">Original: ${title}</p>
                 </div>
 
                 <div class="film-details__rating">
@@ -98,7 +103,7 @@ const createPopup = (filmCard) => {
                 </div>
               </div>
               <table class="film-details__table">
-              ${createPopupTable(generatePopup(filmCard, 4, 10))}
+              ${createPopupTable(generatePopup(movie, 4, 10))}
               ${createFilmGenre(genre)}
               </table>
               <p class="film-details__film-description">
@@ -108,13 +113,19 @@ const createPopup = (filmCard) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+            <input type="checkbox" ${
+              isWatchlist ? `checked` : ``
+            } class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched">
+            <input type="checkbox" ${
+              isWatched ? `checked` : ``
+            } class="film-details__control-input visually-hidden" id="watched" name="watched">
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+            <input type="checkbox" ${
+              isFavorite ? `checked` : ``
+            }  class="film-details__control-input visually-hidden" id="favorite" name="favorite">
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
@@ -124,7 +135,7 @@ const createPopup = (filmCard) => {
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
             <ul class="film-details__comments-list">
-            ${createComments(comments)}
+              ${createComments(comments)}
             </ul>
 
             <div class="film-details__new-comment">
@@ -164,9 +175,9 @@ const createPopup = (filmCard) => {
 };
 
 export default class Popup extends Smart {
-  constructor(filmCard, changeData) {
+  constructor(movie, changeData) {
     super();
-    this._data = filmCard;
+    this._data = movie;
     this._changeData = changeData;
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -200,7 +211,7 @@ export default class Popup extends Smart {
   }
 
   _сloseClickHandler(evt) {
-    this._newComment.emoji = null;
+    this._newComment.emotion = null;
     this._callback.popupCloseClick(evt);
   }
 
@@ -219,9 +230,9 @@ export default class Popup extends Smart {
   _emojiClickHandler(evt) {
     evt.preventDefault();
 
-    const emoji = `../../images/emoji/${evt.target.value}.png`;
+    const emotion = evt.target.value;
 
-    if (emoji === this._newComment.emoji) {
+    if (emotion === this._newComment.emotion) {
       return;
     }
 
@@ -230,16 +241,16 @@ export default class Popup extends Smart {
     img.style.width = '100%';
     img.style.height = '100%';
     img.alt = 'emoji-smile';
-    img.src = emoji;
+    img.src = `../../images/emoji/${emotion}.png`;
     img.className = className;
 
-    if (Boolean(this._newComment.emoji)) {
+    if (Boolean(this._newComment.emotion)) {
       replace(img, this.getElement().querySelector(`.film-details__chosen-emoji`));
     } else {
       render(this.getElement().querySelector(`.film-details__add-emoji-label`), img, RenderPosition.BEFORE_END);
     }
 
-    this._newComment.emoji = emoji;
+    this._newComment.emotion = emotion;
   }
 
   _handleDeleteClick(evt) {
@@ -254,11 +265,11 @@ export default class Popup extends Smart {
 
     evt.preventDefault();
 
-    if (!this._newComment.emoji) {
-      this._newComment.emoji = `../../images/emoji/smile.png`;
-    }
+    // if (!this._newComment.emotion) {
+    //   this._newComment.emotion = `../../images/emoji/smile.png`;
+    // }
 
-    this._callback.addCommentClick({ ...this._newComment, text: evt.target.value, day: moment().utc() });
+    this._callback.addCommentClick({ ...this._newComment, comment: evt.target.value, date: moment().utc() });
 
     this._newComment = {};
   }
