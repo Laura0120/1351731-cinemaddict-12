@@ -1,8 +1,9 @@
 import ContentContainerView from '../view/container.js';
-import MoviePresenter from './movie.js';
+import MoviePresenter, { ComponentActions as MoviePresenterViewState } from './movie.js';
 import SortView from '../view/sort.js';
 import ButtonShowMoreView from '../view/show-more.js';
 import LoadingView from '../view/loading.js';
+import NoMovieView from '../view/no-movie.js';
 import { render, RenderPosition, remove, replace } from '../utils/render.js';
 import { sortByDate, sortByRating } from '../utils/film-card.js';
 import { SortType, UpdateType, UserAction } from '../const.js';
@@ -29,6 +30,7 @@ export default class MovieList {
     this._mainFilmsContainer = this._contentContainerComponent.getElement().querySelector(`.films-list__container`);
     this._filmslistComponent = this._contentContainerComponent.getElement().querySelector(`.films-list`);
     this._loadingComponent = new LoadingView();
+    this._noMovieComponent = new NoMovieView();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmCardChange = this._handleFilmCardChange.bind(this);
@@ -120,19 +122,42 @@ export default class MovieList {
   _handleViewAction(actionType, updateType, data) {
     switch (actionType) {
       case UserAction.UPDATE_FILM_CARD:
-        this._api.updateMovies(data).then((response) => {
-          this._moviesModel.updateMovies(updateType, response);
-        });
+        this._api
+          .updateMovies(data)
+          .then((response) =>
+            this._api.getComments(response.id).then((comments) => {
+              return { ...response, comments };
+            }),
+          )
+          .then((movie) => {
+            this._moviesModel.updateMovies(updateType, movie);
+          })
+          .catch(() => {
+            this._moviePresenter[data.id].setViewState(MoviePresenterViewState.ABORTING);
+          });
         break;
       case UserAction.ADD_COMMENT:
-        this._api.addComment(data).then((response) => {
-          this._moviesModel.updateMovies(updateType, response);
-        });
+        this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.COMMENT_SAVING);
+        this._api
+          .addComment(data)
+          .then((response) => {
+            this._moviesModel.updateMovies(updateType, response);
+          })
+          .catch(() => {
+            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING);
+          });
+
         break;
       case UserAction.DELETE_COMMENT:
-        this._api.deleteComment(data).then(() => {
-          this._moviesModel.deleteComment(updateType, data);
-        });
+        this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.COMMENT_DELETING, data.comment);
+        this._api
+          .deleteComment(data)
+          .then(() => {
+            this._moviesModel.deleteComment(updateType, data);
+          })
+          .catch(() => {
+            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING);
+          });
         break;
       case UserAction.LOAD_COMMENTS:
         this._moviesModel.updateMovies(updateType, data);
@@ -169,6 +194,10 @@ export default class MovieList {
     render(this._filmslistComponent, this._loadingComponent, RenderPosition.AFTER_BEGIN);
   }
 
+  _renderNoMovie() {
+    render(this._filmslistComponent, this._noMovieComponent, RenderPosition.AFTER_BEGIN);
+  }
+
   _renderButtonShowMore() {
     if (this._buttonShowMoreComponent !== null) {
       this._buttonShowMoreComponent = null;
@@ -185,6 +214,7 @@ export default class MovieList {
     this._moviePresenter = {};
 
     remove(this._buttonShowMoreComponent);
+    remove(this._noMovieComponent);
     remove(this._loadingComponent);
 
     if (renderedFilmCardCount) {
@@ -204,6 +234,11 @@ export default class MovieList {
 
     const movies = this._getMovies();
     const filmCardCount = movies.length;
+    if (filmCardCount === 0) {
+      this._renderNoMovie();
+      return;
+    }
+
     this._renderFilmCards(movies.slice(0, Math.min(filmCardCount, this._renderedFilmCardCount)), this._mainFilmsContainer);
 
     if (filmCardCount > this._renderedFilmCardCount) {

@@ -22,8 +22,6 @@ const siteMainElement = bodyElement.querySelector(`.main`);
 const footerStatisticsElement = bodyElement.querySelector(`.footer__statistics`);
 const movieListPresenter = new MovieListPresenter(siteMainElement, moviesModel, filterModel, api);
 
-render(siteHeaderElement, new UserProfile(), RenderPosition.BEFORE_END);
-
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel);
 
 let statisticsComponent = null;
@@ -48,12 +46,18 @@ const handleNavClick = (evt) => {
 
 filterPresenter.init();
 movieListPresenter.init();
-api.getMovies().then((movies) => {
-  moviesModel.setMovies(UpdateType.INIT, movies);
-});
-// .catch(() => {
-//   moviesModel.setMovies(UpdateType.INIT, []);
-// })
+
+api
+  .getMovies()
+  .then((movies) => {
+    moviesModel.setMovies(UpdateType.INIT, movies);
+    render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
+    render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
+  })
+  .catch(() => {
+    moviesModel.setMovies(UpdateType.INIT, []);
+    render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
+    render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
+  });
 document.querySelector(`.main-navigation`).addEventListener(`click`, handleNavClick);
 document.querySelector(`.main-navigation__additional`).addEventListener(`click`, handleNavClick);
-render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);

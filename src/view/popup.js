@@ -5,43 +5,6 @@ import { render, replace, RenderPosition } from '../utils/render.js';
 import Smart from './smart.js';
 import { DATE_FORMATS } from '../const';
 
-const generatePopup = (filmCard, start, end) => {
-  return Object.entries(filmCard)
-    .slice(start, end)
-    .map(([detailsItem, detailsItemValue]) => {
-      if (detailsItem === `date`) {
-        return {
-          detailsItem: `Release Date`,
-          detailsItemValue: detailsItemValue.format(DATE_FORMATS.DATE_OF_RELEASE_VIEW),
-        };
-      }
-
-      if (detailsItem === 'runtime') {
-        return {
-          detailsItem,
-          detailsItemValue: moment.utc().startOf(`day`).add({ minutes: detailsItemValue }).format(DATE_FORMATS.FILM_DURATION_VIEW),
-        };
-      }
-
-      return {
-        detailsItem,
-        detailsItemValue,
-      };
-    });
-};
-
-const createPopupTableItem = (detail) => {
-  const { detailsItem, detailsItemValue } = detail;
-  return ` <tr class="film-details__row">
-  <td class="film-details__term">${detailsItem}</td>
-  <td class="film-details__cell">${detailsItemValue}</td>
-</tr>`;
-};
-
-const createPopupTable = (detailsTableItems) => {
-  return detailsTableItems.map((detailsTableItem) => createPopupTableItem(detailsTableItem)).join(``);
-};
-
 const createFilmGenre = (genre) => {
   return ` <tr class="film-details__row">
   <td class="film-details__term">${genre.length > 1 ? `Genres` : `Genre`}</td>
@@ -49,7 +12,7 @@ const createFilmGenre = (genre) => {
 </tr>`;
 };
 
-const createComment = (commentObj) => {
+const createComment = (commentObj, isDisabled = false) => {
   const { emotion, date, author, comment, id } = commentObj;
 
   if (!comment) {
@@ -68,16 +31,44 @@ const createComment = (commentObj) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${id}">Delete</button>
+        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled` : ``}>  ${
+    isDisabled ? `Deleting...` : `Delete`
+  }</button>
       </p>
     </div>
   </li>`;
 };
 
-const createComments = (comments) => comments.map((comment) => createComment(comment)).join(``);
+const createComments = (data) => {
+  const {
+    movie: { comments },
+    deletingComments,
+  } = data;
 
-const createPopup = (movie) => {
-  const { poster, ageRating, alternativeTitle, title, rating, genre, description, comments, isWatched, isFavorite, isWatchlist } = movie;
+  return comments.map((comment) => createComment(comment, deletingComments[comment.id])).join(``);
+};
+
+const createPopup = (data) => {
+  const { movie } = data;
+  const {
+    poster,
+    ageRating,
+    alternativeTitle,
+    title,
+    rating,
+    genre,
+    director,
+    writers,
+    actors,
+    date,
+    runtime,
+    country,
+    description,
+    comments,
+    isWatched,
+    isFavorite,
+    isWatchlist,
+  } = movie;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -103,8 +94,35 @@ const createPopup = (movie) => {
                 </div>
               </div>
               <table class="film-details__table">
-              ${createPopupTable(generatePopup(movie, 4, 10))}
-              ${createFilmGenre(genre)}
+              <tr class="film-details__row">
+              <td class="film-details__term">Director</td>
+              <td class="film-details__cell">${director}</td>
+            </tr>
+            <tr class="film-details__row">
+              <td class="film-details__term">Writers</td>
+              <td class="film-details__cell">${writers.join(`, `)}</td>
+            </tr>
+            <tr class="film-details__row">
+              <td class="film-details__term">Actors</td>
+              <td class="film-details__cell">${actors.join(`, `)}</td>
+            </tr>
+            <tr class="film-details__row">
+              <td class="film-details__term">Release Date</td>
+              <td class="film-details__cell">${date.format(DATE_FORMATS.DATE_OF_RELEASE_VIEW)}</td>
+            </tr>
+            <tr class="film-details__row">
+              <td class="film-details__term">Runtime</td>
+              <td class="film-details__cell">${moment
+                .utc()
+                .startOf(`day`)
+                .add({ minutes: runtime })
+                .format(DATE_FORMATS.FILM_DURATION_VIEW)}</td>
+            </tr>
+            <tr class="film-details__row">
+              <td class="film-details__term">Country</td>
+              <td class="film-details__cell">${country}</td>
+            </tr>
+            ${createFilmGenre(genre)}
               </table>
               <p class="film-details__film-description">
               ${description}
@@ -135,7 +153,7 @@ const createPopup = (movie) => {
             <h3 class="film-details__comments-title">Comments <span class="film-details__comments-count">${comments.length}</span></h3>
 
             <ul class="film-details__comments-list">
-              ${createComments(comments)}
+              ${createComments(data)}
             </ul>
 
             <div class="film-details__new-comment">
@@ -143,7 +161,8 @@ const createPopup = (movie) => {
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"></textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"
+                 ${data.textFieldDisabled ? `disabled` : ``}></textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -177,7 +196,7 @@ const createPopup = (movie) => {
 export default class Popup extends Smart {
   constructor(movie, changeData) {
     super();
-    this._data = movie;
+    this._data = { movie, deletingComments: {}, textFieldDisabled: false };
     this._changeData = changeData;
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -265,9 +284,9 @@ export default class Popup extends Smart {
 
     evt.preventDefault();
 
-    // if (!this._newComment.emotion) {
-    //   this._newComment.emotion = `../../images/emoji/smile.png`;
-    // }
+    if (!this._newComment.emotion) {
+      this._newComment.emotion = `smile`;
+    }
 
     this._callback.addCommentClick({ ...this._newComment, comment: evt.target.value, date: moment().utc() });
 
@@ -305,5 +324,9 @@ export default class Popup extends Smart {
   setWatchedClickHandler(callback) {
     this._callback.watchedClick = callback;
     this.getElement().querySelector(`#watched`).addEventListener(`change`, this._handleWatchedClick);
+  }
+
+  updateDeletingComments(data) {
+    this.updateData({ deletingComments: { ...this._data.deletingComments, ...data } });
   }
 }

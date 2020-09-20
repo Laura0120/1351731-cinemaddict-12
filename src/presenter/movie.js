@@ -9,6 +9,13 @@ const ViewType = {
   DEFAULT: `DEFAULT`,
   POPUP: `POPUP`,
 };
+
+export const ComponentActions = {
+  COMMENT_SAVING: `COMMENT_SAVING`,
+  COMMENT_DELETING: `COMMENT_DELETING`,
+  ABORTING: `ABORTING`,
+};
+
 const bodyElement = document.querySelector(`body`);
 const AUTHORIZATION = `Basic gl2e508ga2406a `;
 const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
@@ -74,6 +81,31 @@ export default class Movies {
     }
   }
 
+  setViewState(actionType, data) {
+    const resetFormState = () => {
+      this._popupComponent.updateData({
+        textFieldDisabled: false,
+        deletingComments: {},
+      });
+    };
+    switch (actionType) {
+      case ComponentActions.COMMENT_SAVING:
+        this._popupComponent.updateData({
+          textFieldDisabled: true,
+        });
+        break;
+      case ComponentActions.COMMENT_DELETING:
+        this._popupComponent.updateDeletingComments({
+          [data.id]: true,
+        });
+        break;
+      case ComponentActions.ABORTING:
+        this._filmCardComponent.shake(resetFormState);
+        this._popupComponent.shake(resetFormState);
+        break;
+    }
+  }
+
   _closeHandler(evt) {
     if (evt) {
       const isEscKey = [`Escape`, `Esc`].includes(evt.key);
@@ -128,12 +160,14 @@ export default class Movies {
   }
 
   _handlePopupClick() {
-    api.getComments(this._filmCard.id).then((comments) => {
-      this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments }));
-    });
-    // .catch(() => {
-
-    // })
+    api
+      .getComments(this._filmCard.id)
+      .then((comments) => {
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments }));
+      })
+      .catch(() => {
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments: [] }));
+      });
     this._popupComponent.updateElement();
     render(bodyElement, this._popupComponent, RenderPosition.BEFORE_END);
     this._changeViewType();
