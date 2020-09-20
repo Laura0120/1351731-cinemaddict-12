@@ -4,7 +4,7 @@ import moment from 'moment';
 import { render, replace, RenderPosition } from '../utils/render.js';
 import Smart from './smart.js';
 import { DATE_FORMATS } from '../const';
-
+const SHAKE_ANIMATION_TIMEOUT = 600;
 const createFilmGenre = (genre) => {
   return ` <tr class="film-details__row">
   <td class="film-details__term">${genre.length > 1 ? `Genres` : `Genre`}</td>
@@ -49,7 +49,7 @@ const createComments = (data) => {
 };
 
 const createPopup = (data) => {
-  const { movie } = data;
+  const { movie, localComment } = data;
   const {
     poster,
     ageRating,
@@ -69,6 +69,7 @@ const createPopup = (data) => {
     isFavorite,
     isWatchlist,
   } = movie;
+  const { comment, emotion } = localComment;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -157,12 +158,19 @@ const createPopup = (data) => {
             </ul>
 
             <div class="film-details__new-comment">
-              <div for="add-emoji" class="film-details__add-emoji-label">
+              <div class="film-details__add-emoji-label">
+             ${
+               emotion
+                 ? `<img alt="emoji-smile" src="../../images/emoji/${emotion}.png" class="film-details__chosen-emoji" style="width: 100%; height: 100%;">`
+                 : ``
+             }
               </div>
 
               <label class="film-details__comment-label">
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment"
-                 ${data.textFieldDisabled ? `disabled` : ``}></textarea>
+
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" >${
+                  comment ? comment : ``
+                }</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -196,7 +204,7 @@ const createPopup = (data) => {
 export default class Popup extends Smart {
   constructor(movie, changeData) {
     super();
-    this._data = { movie, deletingComments: {}, textFieldDisabled: false };
+    this._data = { movie, deletingComments: {}, textFieldDisabled: false, localComment: {} };
     this._changeData = changeData;
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -205,8 +213,6 @@ export default class Popup extends Smart {
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
     this._handleDeleteClick = this._handleDeleteClick.bind(this);
     this._handleCommentAdd = this._handleCommentAdd.bind(this);
-
-    this._newComment = {};
 
     this._setInnerHandlers();
   }
@@ -230,7 +236,7 @@ export default class Popup extends Smart {
   }
 
   _сloseClickHandler(evt) {
-    this._newComment.emotion = null;
+    // this._newComment.emotion = null;
     this._callback.popupCloseClick(evt);
   }
 
@@ -246,35 +252,34 @@ export default class Popup extends Smart {
     this._callback.watchedClick();
   }
 
+  _handleDeleteClick(evt) {
+    evt.preventDefault();
+    this._callback.deleteClick(evt);
+  }
+
   _emojiClickHandler(evt) {
     evt.preventDefault();
 
     const emotion = evt.target.value;
 
-    if (emotion === this._newComment.emotion) {
+    if (emotion === this._data.localComment.emotion) {
       return;
     }
 
     const img = document.createElement('img');
-    const className = `film-details__chosen-emoji`;
     img.style.width = '100%';
     img.style.height = '100%';
     img.alt = 'emoji-smile';
     img.src = `../../images/emoji/${emotion}.png`;
-    img.className = className;
+    img.className = `film-details__chosen-emoji`;
 
-    if (Boolean(this._newComment.emotion)) {
+    if (Boolean(this._data.localComment.emotion)) {
       replace(img, this.getElement().querySelector(`.film-details__chosen-emoji`));
     } else {
       render(this.getElement().querySelector(`.film-details__add-emoji-label`), img, RenderPosition.BEFORE_END);
     }
 
-    this._newComment.emotion = emotion;
-  }
-
-  _handleDeleteClick(evt) {
-    evt.preventDefault();
-    this._callback.deleteClick(evt);
+    this._data.localComment.emotion = emotion;
   }
 
   _handleCommentAdd(evt) {
@@ -284,13 +289,10 @@ export default class Popup extends Smart {
 
     evt.preventDefault();
 
-    if (!this._newComment.emotion) {
-      this._newComment.emotion = `smile`;
-    }
+    this._data.localComment = { ...this._data.localComment, comment: evt.target.value, date: moment().utc() };
+    this._callback.addCommentClick(this._data.localComment);
 
-    this._callback.addCommentClick({ ...this._newComment, comment: evt.target.value, date: moment().utc() });
-
-    this._newComment = {};
+    // this._newComment = {};
   }
 
   setAddClickHandler(callback) {
@@ -328,5 +330,15 @@ export default class Popup extends Smart {
 
   updateDeletingComments(data) {
     this.updateData({ deletingComments: { ...this._data.deletingComments, ...data } });
+  }
+
+  shakeForm(callback) {
+    this.getElement().querySelector(`.film-details__comment-input`).style.animation = `shake ${SHAKE_ANIMATION_TIMEOUT / 1000}s`;
+    setTimeout(() => {
+      this.getElement().querySelector(`.film-details__comment-input`).style.animation = ``;
+      if (callback) {
+        callback();
+      }
+    }, SHAKE_ANIMATION_TIMEOUT);
   }
 }

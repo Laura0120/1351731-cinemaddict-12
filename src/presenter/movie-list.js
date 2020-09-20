@@ -144,7 +144,7 @@ export default class MovieList {
             this._moviesModel.updateMovies(updateType, response);
           })
           .catch(() => {
-            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING);
+            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING_ADD_COMMENT);
           });
 
         break;
@@ -156,7 +156,7 @@ export default class MovieList {
             this._moviesModel.deleteComment(updateType, data);
           })
           .catch(() => {
-            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING);
+            this._moviePresenter[data.movieId].setViewState(MoviePresenterViewState.ABORTING_DELETE_COMMENT, data.comment);
           });
         break;
       case UserAction.LOAD_COMMENTS:

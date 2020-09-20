@@ -14,6 +14,8 @@ export const ComponentActions = {
   COMMENT_SAVING: `COMMENT_SAVING`,
   COMMENT_DELETING: `COMMENT_DELETING`,
   ABORTING: `ABORTING`,
+  ABORTING_ADD_COMMENT: `ABORTING_ADD_COMMENT`,
+  ABORTING_DELETE_COMMENT: `ABORTING_DELETE_COMMENT`,
 };
 
 const bodyElement = document.querySelector(`body`);
@@ -85,14 +87,24 @@ export default class Movies {
     const resetFormState = () => {
       this._popupComponent.updateData({
         textFieldDisabled: false,
-        deletingComments: {},
       });
     };
+
     switch (actionType) {
       case ComponentActions.COMMENT_SAVING:
         this._popupComponent.updateData({
           textFieldDisabled: true,
         });
+
+        break;
+      case ComponentActions.COMMENT_SAVED:
+        this._popupComponent.updateData(
+          {
+            textFieldDisabled: false,
+            localComment: {},
+          },
+          true,
+        );
         break;
       case ComponentActions.COMMENT_DELETING:
         this._popupComponent.updateDeletingComments({
@@ -101,7 +113,17 @@ export default class Movies {
         break;
       case ComponentActions.ABORTING:
         this._filmCardComponent.shake(resetFormState);
-        this._popupComponent.shake(resetFormState);
+        this._popupComponent.shake();
+        break;
+      case ComponentActions.ABORTING_DELETE_COMMENT:
+        this._popupComponent.updateDeletingComments({
+          [data.id]: false,
+        });
+        this._filmCardComponent.shake(resetFormState);
+        this._popupComponent.shake();
+        break;
+      case ComponentActions.ABORTING_ADD_COMMENT:
+        this._popupComponent.shakeForm(resetFormState);
         break;
     }
   }
