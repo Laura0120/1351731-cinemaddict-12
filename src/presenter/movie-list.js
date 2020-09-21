@@ -1,13 +1,13 @@
 import ContentContainerView from '../view/container.js';
-import MoviePresenter, { ComponentActions as MoviePresenterViewState } from './movie.js';
+import MoviePresenter, {ComponentActions as MoviePresenterViewState} from './movie.js';
 import SortView from '../view/sort.js';
 import ButtonShowMoreView from '../view/show-more.js';
 import LoadingView from '../view/loading.js';
 import NoMovieView from '../view/no-movie.js';
-import { render, RenderPosition, remove, replace } from '../utils/render.js';
-import { sortByDate, sortByRating } from '../utils/film-card.js';
-import { SortType, UpdateType, UserAction } from '../const.js';
-import { filter } from '../utils/filter.js';
+import {render, RenderPosition, remove, replace} from '../utils/render.js';
+import {sortByDate, sortByRating} from '../utils/film-card.js';
+import {SortType, UpdateType, UserAction} from '../const.js';
+import {filter} from '../utils/filter.js';
 
 const FILM_CARD_COUNT_PER_STEP = 5;
 
@@ -26,9 +26,6 @@ export default class MovieList {
     this._sortComponent = null;
     this._buttonShowMoreComponent = null;
 
-    this._contentContainerComponent = new ContentContainerView();
-    this._mainFilmsContainer = this._contentContainerComponent.getElement().querySelector(`.films-list__container`);
-    this._filmslistComponent = this._contentContainerComponent.getElement().querySelector(`.films-list`);
     this._loadingComponent = new LoadingView();
     this._noMovieComponent = new NoMovieView();
 
@@ -41,6 +38,9 @@ export default class MovieList {
 
   init() {
     this._renderSort();
+    this._contentContainerComponent = new ContentContainerView();
+    this._mainFilmsContainer = this._contentContainerComponent.getElement().querySelector(`.films-list__container`);
+    this._filmslistComponent = this._contentContainerComponent.getElement().querySelector(`.films-list`);
     render(this._contentContainer, this._contentContainerComponent, RenderPosition.BEFORE_END);
     this._renderContent();
 
@@ -49,7 +49,7 @@ export default class MovieList {
   }
 
   destroy() {
-    this._clearContent({ renderedFilmCardCount: true, resetSortType: true });
+    this._clearContent({renderedFilmCardCount: true, resetSortType: true});
 
     remove(this._contentContainerComponent);
 
@@ -82,7 +82,7 @@ export default class MovieList {
         this._moviePresenter[data.id].init(data);
         break;
       case UpdateType.FILTER:
-        this._clearContent({ renderedFilmCardCount: true, resetSortType: true });
+        this._clearContent({renderedFilmCardCount: true, resetSortType: true});
         this._renderSort();
         this._renderContent();
         break;
@@ -100,7 +100,7 @@ export default class MovieList {
     }
 
     this._currentSortType = sortType;
-    this._clearContent({ renderedFilmCardCount: true });
+    this._clearContent({renderedFilmCardCount: true});
     this._renderSort();
     this._renderContent();
   }
@@ -126,10 +126,8 @@ export default class MovieList {
           .updateMovies(data)
           .then((response) =>
             this._api.getComments(response.id).then((comments) => {
-              return { ...response, comments };
-            }),
-          )
-          .then((movie) => {
+              return Object.assign({}, response, {comments});
+            })).then((movie) => {
             this._moviesModel.updateMovies(updateType, movie);
           })
           .catch(() => {
@@ -209,7 +207,7 @@ export default class MovieList {
     render(this._mainFilmsContainer, this._buttonShowMoreComponent, RenderPosition.BEFORE_END);
   }
 
-  _clearContent({ renderedFilmCardCount = false, resetSortType = false } = {}) {
+  _clearContent({renderedFilmCardCount = false, resetSortType = false} = {}) {
     Object.values(this._moviePresenter).forEach((presenter) => presenter.destroy());
     this._moviePresenter = {};
 

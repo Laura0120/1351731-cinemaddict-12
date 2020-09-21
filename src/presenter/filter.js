@@ -1,7 +1,7 @@
 import FilterView from '../view/filter.js';
-import { render, RenderPosition, replace, remove } from '../utils/render.js';
-import { filter } from '../utils/filter.js';
-import { FilterType, UpdateType } from '../const.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {filter} from '../utils/filter.js';
+import {FilterType, UpdateType} from '../const.js';
 
 export default class Filter {
   constructor(filterContainer, filterModel, moviesModel) {
@@ -10,6 +10,7 @@ export default class Filter {
     this._moviesModel = moviesModel;
     this._currentFilter = null;
     this._filterComponent = null;
+    this._callback = {};
 
     this._handleModelEvent = this._handleModelEvent.bind(this);
     this._handleFilterTypeChange = this._handleFilterTypeChange.bind(this);
@@ -26,6 +27,8 @@ export default class Filter {
 
     this._filterComponent = new FilterView(filters, this._currentFilter);
     this._filterComponent.setFilterTypeChangeHandler(this._handleFilterTypeChange);
+    this._filterComponent.setFilterClickHandler(this._callback.navClick);
+    this._filterComponent.setStatsClickHandler(this._callback.navClick);
 
     if (prevFilterComponent === null) {
       render(this._filterContainer, this._filterComponent, RenderPosition.BEFORE_END);
@@ -34,6 +37,10 @@ export default class Filter {
 
     replace(this._filterComponent, prevFilterComponent);
     remove(prevFilterComponent);
+  }
+
+  setNavClickHandler(callback) {
+    this._callback.navClick = callback;
   }
 
   _handleModelEvent() {

@@ -1,5 +1,5 @@
 import AbstractView from './abstract.js';
-import { getProfileRatingt } from '../utils/common.js';
+import {getProfileRatingt} from '../utils/common.js';
 
 const createUserProfile = (movies) => {
   return `<section class="header__profile profile">

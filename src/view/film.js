@@ -1,22 +1,22 @@
 import moment from 'moment';
 
 import AbstractView from './abstract.js';
-import { DATE_FORMATS } from '../const';
+import {DataFormats} from '../const';
 
 const COUNT_SYMBOL_DESCRIPTION = 140;
 
 const createFilmCard = (filmCard) => {
-  const { poster, alternativeTitle, rating, date, runtime, genre, description, comments, isWatched, isFavorite, isWatchlist } = filmCard;
+  const {poster, alternativeTitle, rating, date, runtime, genre, description, comments, isWatched, isFavorite, isWatchlist} = filmCard;
   return `<article class="film-card" >
     <h3 class="film-card__title">${alternativeTitle}</h3>
     <p class="film-card__rating">${rating}</p>
     <p class="film-card__info">
-      <span class="film-card__year">${date.format(DATE_FORMATS.DATE_OF_RELEASE_YEAR_VIEW)}</span>
+      <span class="film-card__year">${date.format(DataFormats.DATE_OF_RELEASE_YEAR_VIEW)}</span>
       <span class="film-card__duration">${moment
         .utc()
         .startOf(`day`)
-        .add({ minutes: runtime })
-        .format(DATE_FORMATS.FILM_DURATION_VIEW)}</span>
+        .add({minutes: runtime})
+        .format(DataFormats.FILM_DURATION_VIEW)}</span>
       <span class="film-card__genre">${genre.join(` `)}</span>
     </p>
     <img src= "${poster}" alt="" class="film-card__poster">

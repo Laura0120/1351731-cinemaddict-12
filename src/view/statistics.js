@@ -3,11 +3,11 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
 
 import SmartView from './smart.js';
-import { getCurrentDate, getProfileRatingt } from '../utils/common.js';
-import { watchedMovieInDateRange } from '../utils/statistics.js';
-import { StatisticFilters, DATE_FORMATS } from '../const.js';
+import {getCurrentDate, getProfileRatingt} from '../utils/common.js';
+import {watchedMovieInDateRange} from '../utils/statistics.js';
+import {StatisticFilters, DataFormats} from '../const.js';
 
-const filterMovies = ({ movies, currentFilter, startDate, dateTo }) => {
+const filterMovies = ({movies, currentFilter, startDate, dateTo}) => {
   if (currentFilter === StatisticFilters.ALL_TIME) {
     return movies.filter((movie) => movie.isWatched);
   }
@@ -70,8 +70,8 @@ const renderGenreChart = (genreCtx, data) => {
             size: 20,
           },
           color: `#ffffff`,
-          anchor: 'start',
-          align: 'start',
+          anchor: `start`,
+          align: `start`,
           offset: 40,
         },
       },
@@ -124,7 +124,7 @@ const createStatisticsTemplate = (data) => {
         return acc;
       }, 0),
     })
-    .format(DATE_FORMATS.FILM_DURATION_VIEW);
+    .format(DataFormats.FILM_DURATION_VIEW);
 
   const topRated = getSortedGenresByCounts(filteredMovies)[0];
 
@@ -225,20 +225,20 @@ export default class Statistics extends SmartView {
 
     this._genreChart = null;
 
-    this._handleChangeFilter = this._handleChangeFilter.bind(this);
+    this._handleChangeStatFilter = this._handleChangeStatFilter.bind(this);
 
     this._setChart();
     this._setInnerHandlers();
   }
 
-  _handleChangeFilter(evt) {
+  _handleChangeStatFilter(evt) {
     if (evt.target.value === this._data.currentFilter) {
       return;
     }
 
     const startDate = this._getMoviesRangeStart(evt.target.value);
 
-    this.updateData({ currentFilter: evt.target.value, startDate });
+    this.updateData({currentFilter: evt.target.value, startDate});
   }
 
   _getMoviesRangeStart(value) {
@@ -278,8 +278,9 @@ export default class Statistics extends SmartView {
   _setInnerHandlers() {
     this.getElement()
       .querySelectorAll(`.statistic__filters-input`)
-      .forEach((element) => element.addEventListener(`click`, this._handleChangeFilter));
+      .forEach((element) => element.addEventListener(`click`, this._handleChangeStatFilter));
   }
+
   _setChart() {
     if (this._genreChart !== null) {
       this._genreChart = null;

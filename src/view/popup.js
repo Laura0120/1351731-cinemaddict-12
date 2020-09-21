@@ -1,10 +1,11 @@
 import he from 'he';
 import moment from 'moment';
 
-import { render, replace, RenderPosition } from '../utils/render.js';
+import {render, replace, RenderPosition} from '../utils/render.js';
 import Smart from './smart.js';
-import { DATE_FORMATS } from '../const';
-const SHAKE_ANIMATION_TIMEOUT = 600;
+import {DataFormats} from '../const';
+import {SHAKE_ANIMATION_TIMEOUT} from '../const.js';
+
 const createFilmGenre = (genre) => {
   return ` <tr class="film-details__row">
   <td class="film-details__term">${genre.length > 1 ? `Genres` : `Genre`}</td>
@@ -13,14 +14,14 @@ const createFilmGenre = (genre) => {
 };
 
 const createComment = (commentObj, isDisabled = false) => {
-  const { emotion, date, author, comment, id } = commentObj;
+  const {emotion, date, author, comment, id} = commentObj;
 
   if (!comment) {
-    return;
+    return ``;
   }
 
   const dateObj = moment(date);
-  const commentDate = moment().utc().diff(dateObj, 'days') >= 2 ? dateObj.format(DATE_FORMATS.COMMENT_DATE_VIEW) : dateObj.fromNow();
+  const commentDate = moment().utc().diff(dateObj, `days`) >= 2 ? dateObj.format(DataFormats.COMMENT_DATE_VIEW) : dateObj.fromNow();
 
   return `<li class="film-details__comment">
     <span class="film-details__comment-emoji">
@@ -31,9 +32,8 @@ const createComment = (commentObj, isDisabled = false) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled` : ``}>  ${
-    isDisabled ? `Deleting...` : `Delete`
-  }</button>
+        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled` : ``}>
+        ${isDisabled ? `Deleting...` : `Delete`} </button>
       </p>
     </div>
   </li>`;
@@ -41,7 +41,7 @@ const createComment = (commentObj, isDisabled = false) => {
 
 const createComments = (data) => {
   const {
-    movie: { comments },
+    movie: {comments},
     deletingComments,
   } = data;
 
@@ -49,7 +49,7 @@ const createComments = (data) => {
 };
 
 const createPopup = (data) => {
-  const { movie, localComment } = data;
+  const {movie, localComment} = data;
   const {
     poster,
     ageRating,
@@ -69,7 +69,7 @@ const createPopup = (data) => {
     isFavorite,
     isWatchlist,
   } = movie;
-  const { comment, emotion } = localComment;
+  const {comment, emotion} = localComment;
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -109,15 +109,15 @@ const createPopup = (data) => {
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Release Date</td>
-              <td class="film-details__cell">${date.format(DATE_FORMATS.DATE_OF_RELEASE_VIEW)}</td>
+              <td class="film-details__cell">${date.format(DataFormats.DATE_OF_RELEASE_VIEW)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Runtime</td>
               <td class="film-details__cell">${moment
                 .utc()
                 .startOf(`day`)
-                .add({ minutes: runtime })
-                .format(DATE_FORMATS.FILM_DURATION_VIEW)}</td>
+                .add({minutes: runtime})
+                .format(DataFormats.FILM_DURATION_VIEW)}</td>
             </tr>
             <tr class="film-details__row">
               <td class="film-details__term">Country</td>
@@ -132,19 +132,16 @@ const createPopup = (data) => {
           </div>
 
           <section class="film-details__controls">
-            <input type="checkbox" ${
-              isWatchlist ? `checked` : ``
-            } class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
+            <input type="checkbox" ${isWatchlist ? `checked` : ``}
+             class="film-details__control-input visually-hidden" id="watchlist" name="watchlist">
             <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
 
-            <input type="checkbox" ${
-              isWatched ? `checked` : ``
-            } class="film-details__control-input visually-hidden" id="watched" name="watched">
+            <input type="checkbox" ${isWatched ? `checked` : ``}
+             class="film-details__control-input visually-hidden" id="watched" name="watched">
             <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
 
-            <input type="checkbox" ${
-              isFavorite ? `checked` : ``
-            }  class="film-details__control-input visually-hidden" id="favorite" name="favorite">
+            <input type="checkbox" ${isFavorite ? `checked` : ``}
+              class="film-details__control-input visually-hidden" id="favorite" name="favorite">
             <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
           </section>
         </div>
@@ -159,18 +156,14 @@ const createPopup = (data) => {
 
             <div class="film-details__new-comment">
               <div class="film-details__add-emoji-label">
-             ${
-               emotion
-                 ? `<img alt="emoji-smile" src="../../images/emoji/${emotion}.png" class="film-details__chosen-emoji" style="width: 100%; height: 100%;">`
-                 : ``
-             }
+             ${emotion ? `<img alt="emoji-smile" src="../../images/emoji/${emotion}.png"
+             class="film-details__chosen-emoji" style="width: 100%; height: 100%;">` : ``}
               </div>
 
               <label class="film-details__comment-label">
 
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" >${
-                  comment ? comment : ``
-                }</textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" >
+                ${comment ? comment : ``}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
@@ -204,7 +197,7 @@ const createPopup = (data) => {
 export default class Popup extends Smart {
   constructor(movie, changeData) {
     super();
-    this._data = { movie, deletingComments: {}, textFieldDisabled: false, localComment: {} };
+    this._data = {movie, deletingComments: {}, textFieldDisabled: false, localComment: {}};
     this._changeData = changeData;
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
@@ -236,7 +229,6 @@ export default class Popup extends Smart {
   }
 
   _сloseClickHandler(evt) {
-    // this._newComment.emotion = null;
     this._callback.popupCloseClick(evt);
   }
 
@@ -266,14 +258,14 @@ export default class Popup extends Smart {
       return;
     }
 
-    const img = document.createElement('img');
-    img.style.width = '100%';
-    img.style.height = '100%';
-    img.alt = 'emoji-smile';
+    const img = document.createElement(`img`);
+    img.style.width = `100%`;
+    img.style.height = `100%`;
+    img.alt = `emoji-smile`;
     img.src = `../../images/emoji/${emotion}.png`;
     img.className = `film-details__chosen-emoji`;
 
-    if (Boolean(this._data.localComment.emotion)) {
+    if (this._data.localComment.emotion) {
       replace(img, this.getElement().querySelector(`.film-details__chosen-emoji`));
     } else {
       render(this.getElement().querySelector(`.film-details__add-emoji-label`), img, RenderPosition.BEFORE_END);
@@ -289,10 +281,8 @@ export default class Popup extends Smart {
 
     evt.preventDefault();
 
-    this._data.localComment = { ...this._data.localComment, comment: evt.target.value, date: moment().utc() };
+    this._data.localComment = Object.assign({}, this._data.localComment, {comment: evt.target.value, date: moment().utc()});
     this._callback.addCommentClick(this._data.localComment);
-
-    // this._newComment = {};
   }
 
   setAddClickHandler(callback) {
@@ -329,7 +319,7 @@ export default class Popup extends Smart {
   }
 
   updateDeletingComments(data) {
-    this.updateData({ deletingComments: { ...this._data.deletingComments, ...data } });
+    this.updateData({deletingComments: Object.assign({}, this._data.deletingComments, data)});
   }
 
   shakeForm(callback) {

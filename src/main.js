@@ -6,13 +6,10 @@ import MovieListPresenter from './presenter/movie-list.js';
 import MoviesModel from './model/movies.js';
 import FilterModel from './model/filter.js';
 import Api from './api.js';
-import { render, RenderPosition, remove } from './utils/render.js';
-import { UpdateType, MenuItem } from './const.js';
+import {render, RenderPosition, remove} from './utils/render.js';
+import {UpdateType, MenuItem, AUTHORIZATION, END_POINT_MOVIE} from './const.js';
 
-const AUTHORIZATION = `Basic gl2e508ga2406a `;
-const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
-
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
 const moviesModel = new MoviesModel();
 const filterModel = new FilterModel();
 
@@ -25,13 +22,13 @@ const movieListPresenter = new MovieListPresenter(siteMainElement, moviesModel, 
 const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel);
 
 let statisticsComponent = null;
-const handleNavClick = (evt) => {
-  switch (evt.target.dataset.navType) {
+
+const handleNavClick = (navType) => {
+  switch (navType) {
     case MenuItem.STATS:
       if (statisticsComponent) {
         return;
       }
-      evt.preventDefault();
       movieListPresenter.destroy();
       statisticsComponent = new StatisticsView(moviesModel.getMovies());
       render(siteMainElement, statisticsComponent, RenderPosition.BEFORE_END);
@@ -39,12 +36,15 @@ const handleNavClick = (evt) => {
     default:
       if (statisticsComponent) {
         remove(statisticsComponent);
+        statisticsComponent = null;
         movieListPresenter.init();
       }
   }
 };
 
+filterPresenter.setNavClickHandler(handleNavClick);
 filterPresenter.init();
+
 movieListPresenter.init();
 
 api
@@ -54,11 +54,10 @@ api
     render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
     render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
   })
-  .catch((err) => {
-    console.error(err);
+  .catch(() => {
     moviesModel.setMovies(UpdateType.INIT, []);
     render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
     render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
   });
-document.querySelector(`.main-navigation`).addEventListener(`click`, handleNavClick);
-document.querySelector(`.main-navigation__additional`).addEventListener(`click`, handleNavClick);
+// document.querySelector(`.main-navigation`).addEventListener(`click`, handleNavClick);
+// document.querySelector(`.main-navigation__additional`).addEventListener(`click`, handleNavClick);

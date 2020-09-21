@@ -1,7 +1,7 @@
 import AbstractView from './abstract.js';
 
 const createFilterItemTemplate = (filter, currentFilterType) => {
-  const { type, name, count } = filter;
+  const {type, name, count} = filter;
   return `<a href="#" class="main-navigation__item ${type === currentFilterType ? `main-navigation__item--active` : ``}
   " data-filter-type="${type}">${name} ${name !== `All movies` ? `<span class='main-navigation__item-count'>${count}</span>` : ``}</a> `;
 };
@@ -23,37 +23,37 @@ export default class Filter extends AbstractView {
     this._currentFilter = currentFilterType;
 
     this._filterTypeChangeHandler = this._filterTypeChangeHandler.bind(this);
-    // this._navFilterClickHandler = this._navFilterClickHandler.bind(this);
-    // this._navStatsClickHandler = this._navStatsClickHandler.bind(this);
+    this._navFilterClickHandler = this._navFilterClickHandler.bind(this);
+    this._navStatsClickHandler = this._navStatsClickHandler.bind(this);
   }
 
   getTemplate() {
     return createFilterTemplate(this._filters, this._currentFilter);
   }
 
-  // _navFilterClickHandler(evt) {
-  //   this._callback.navClick(evt.target.dataset.navType);
-  // }
+  _navFilterClickHandler(evt) {
+    this._callback.navClick(evt.target.dataset.navType);
+  }
 
-  // _navStatsClickHandler(evt) {
-  //   evt.preventDefault();
-  //   this._callback.navClick(evt.target.dataset.navType);
-  // }
+  _navStatsClickHandler(evt) {
+    evt.preventDefault();
+    this._callback.navClick(evt.target.dataset.navType);
+  }
 
   _filterTypeChangeHandler(evt) {
     evt.preventDefault();
     this._callback.filterTypeChange(evt.target.dataset.filterType);
   }
 
-  // setFilterClickHandler(callback) {
-  //   this._callback.navClick = callback;
-  //   this.getElement().querySelector(`.main-navigation`).addEventListener(`click`, this._navFilterClickHandler);
-  // }
+  setFilterClickHandler(callback) {
+    this._callback.navClick = callback;
+    this.getElement().querySelector(`.main-navigation__items`).addEventListener(`click`, this._navFilterClickHandler);
+  }
 
-  // setStatsClickHandler(callback) {
-  //   this._callback.navClick = callback;
-  //   this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._navStatsClickHandler);
-  // }
+  setStatsClickHandler(callback) {
+    this._callback.navClick = callback;
+    this.getElement().querySelector(`.main-navigation__additional`).addEventListener(`click`, this._navStatsClickHandler);
+  }
 
   setFilterTypeChangeHandler(callback) {
     this._callback.filterTypeChange = callback;

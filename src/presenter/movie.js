@@ -2,8 +2,8 @@ import FilmCardView from '../view/film.js';
 import PopupView from '../view/popup.js';
 import Api from '../api.js';
 
-import { render, RenderPosition, replace, remove } from '../utils/render.js';
-import { UpdateType, UserAction } from '../const.js';
+import {render, RenderPosition, replace, remove} from '../utils/render.js';
+import {UpdateType, UserAction, AUTHORIZATION, END_POINT_MOVIE} from '../const.js';
 
 const ViewType = {
   DEFAULT: `DEFAULT`,
@@ -19,9 +19,7 @@ export const ComponentActions = {
 };
 
 const bodyElement = document.querySelector(`body`);
-const AUTHORIZATION = `Basic gl2e508ga2406a `;
-const END_POINT = `https://12.ecmascript.pages.academy/cinemaddict`;
-const api = new Api(END_POINT, AUTHORIZATION);
+const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
 
 export default class Movies {
   constructor(filmListContainer, changeData, changeViewType) {
@@ -99,12 +97,11 @@ export default class Movies {
         break;
       case ComponentActions.COMMENT_SAVED:
         this._popupComponent.updateData(
-          {
-            textFieldDisabled: false,
-            localComment: {},
-          },
-          true,
-        );
+            {
+              textFieldDisabled: false,
+              localComment: {},
+            },
+            true);
         break;
       case ComponentActions.COMMENT_DELETING:
         this._popupComponent.updateDeletingComments({
@@ -145,50 +142,47 @@ export default class Movies {
 
   _handleFavoriteClick() {
     this._changeData(
-      UserAction.UPDATE_FILM_CARD,
-      UpdateType.FILM_CARD,
-      Object.assign({}, this._filmCard, { isFavorite: !this._filmCard.isFavorite }),
-    );
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
   }
 
   _handleWatchlistClick() {
     this._changeData(
-      UserAction.UPDATE_FILM_CARD,
-      UpdateType.FILM_CARD,
-      Object.assign({}, this._filmCard, { isWatchlist: !this._filmCard.isWatchlist }),
-    );
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
   }
 
   _handleWatchedClick() {
     this._changeData(
-      UserAction.UPDATE_FILM_CARD,
-      UpdateType.FILM_CARD,
-      Object.assign({}, this._filmCard, { isWatched: !this._filmCard.isWatched }),
-    );
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
   }
 
   _handleDeleteComment(evt) {
-    const comment = this._filmCard.comments.find((comment) => comment.id === evt.target.dataset.id);
+    const comment = this._filmCard.comments.find((commentItem) => commentItem.id === evt.target.dataset.id);
 
     if (!comment) {
       return;
     }
 
-    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, { movieId: this._filmCard.id, comment });
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handleAddComment(comment) {
-    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, { movieId: this._filmCard.id, comment });
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handlePopupClick() {
     api
       .getComments(this._filmCard.id)
       .then((comments) => {
-        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments }));
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
       })
       .catch(() => {
-        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, { comments: [] }));
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments: []}));
       });
     this._popupComponent.updateElement();
     render(bodyElement, this._popupComponent, RenderPosition.BEFORE_END);

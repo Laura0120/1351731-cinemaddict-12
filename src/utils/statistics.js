@@ -6,10 +6,11 @@ export const watchedMovieInDateRange = (movies, dateFrom, dateTo) => {
   }
 
   const watchedMovie = movies.filter(
-    (movie) =>
-      moment(movie.watchingDate).isSame(dateFrom) ||
-      moment(movie.watchingDate).isBetween(dateFrom, dateTo) ||
-      moment(movie.watchingDate).isSame(dateTo),
+      (movie) =>
+        moment(movie.watchingDate).isSame(dateFrom) ||
+        moment(movie.watchingDate).isBetween(dateFrom, dateTo) ||
+        moment(movie.watchingDate).isSame(dateTo)
   );
+
   return watchedMovie;
 };
