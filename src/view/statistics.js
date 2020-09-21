@@ -3,7 +3,7 @@ import ChartDataLabels from 'chartjs-plugin-datalabels';
 import moment from 'moment';
 
 import SmartView from './smart.js';
-import {getCurrentDate, getProfileRatingt} from '../utils/common.js';
+import {getCurrentDate, getProfileRating} from '../utils/common.js';
 import {watchedMovieInDateRange} from '../utils/statistics.js';
 import {StatisticFilters, DataFormats} from '../const.js';
 
@@ -132,7 +132,7 @@ const createStatisticsTemplate = (data) => {
   <p class="statistic__rank">
     Your rank
     <img class="statistic__img" src="images/bitmap@2x.png" alt="Avatar" width="35" height="35">
-    <span class="statistic__rank-label">${getProfileRatingt(data.movies)}</span>
+    <span class="statistic__rank-label">${getProfileRating(data.movies)}</span>
   </p>
 
   <form action="https://echo.htmlacademy.ru/" method="get" class="statistic__filters">
