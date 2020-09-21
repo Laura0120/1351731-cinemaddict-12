@@ -12,7 +12,7 @@ export const getCurrentDate = () => {
   return new Date(currentDate);
 };
 
-export const getProfileRatingt = (movies) => {
+export const getProfileRating = (movies) => {
   let profileRatingt = ``;
   if (movies.length >= 1 || movies.length <= 10) {
     profileRatingt = `novice`;

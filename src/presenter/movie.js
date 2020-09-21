@@ -3,7 +3,7 @@ import PopupView from '../view/popup.js';
 import Api from '../api.js';
 
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {UpdateType, UserAction, AUTHORIZATION, END_POINT_MOVIE} from '../const.js';
+import {UpdateType, UserAction} from '../const.js';
 
 const ViewType = {
   DEFAULT: `DEFAULT`,
@@ -19,7 +19,7 @@ export const ComponentActions = {
 };
 
 const bodyElement = document.querySelector(`body`);
-const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
+const api = new Api();
 
 export default class Movies {
   constructor(filmListContainer, changeData, changeViewType) {

@@ -7,9 +7,9 @@ import MoviesModel from './model/movies.js';
 import FilterModel from './model/filter.js';
 import Api from './api.js';
 import {render, RenderPosition, remove} from './utils/render.js';
-import {UpdateType, MenuItem, AUTHORIZATION, END_POINT_MOVIE} from './const.js';
+import {UpdateType, MenuItem} from './const.js';
 
-const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
+const api = new Api();
 const moviesModel = new MoviesModel();
 const filterModel = new FilterModel();
 
@@ -59,5 +59,4 @@ api
     render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
     render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
   });
-// document.querySelector(`.main-navigation`).addEventListener(`click`, handleNavClick);
-// document.querySelector(`.main-navigation__additional`).addEventListener(`click`, handleNavClick);
+
