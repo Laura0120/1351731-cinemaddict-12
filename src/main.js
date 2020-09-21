@@ -1,29 +1,63 @@
 import UserProfile from './view/profile.js';
+import FooterStatisticsView from './view/footer-statistics.js';
+import StatisticsView from './view/statistics.js';
 import FilterPresenter from './presenter/filter.js';
 import MovieListPresenter from './presenter/movie-list.js';
-import FooterStatisticsView from './view/footer-statistics.js';
-import FilmCardsModel from './model/film-cards.js';
+import MoviesModel from './model/movies.js';
 import FilterModel from './model/filter.js';
-import {render, RenderPosition} from './utils/render.js';
-import {generateFilmCard} from './mock/film';
+import Api from './api.js';
+import {render, RenderPosition, remove} from './utils/render.js';
+import {UpdateType, MenuItem, AUTHORIZATION, END_POINT_MOVIE} from './const.js';
 
-const FILM_CARD_COUNT = 15;
-
-const filmCards = new Array(FILM_CARD_COUNT).fill().map(generateFilmCard);
-
-const filmCardsModel = new FilmCardsModel();
-filmCardsModel.setFilmCards(filmCards);
-
+const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
+const moviesModel = new MoviesModel();
 const filterModel = new FilterModel();
 
 const bodyElement = document.querySelector(`body`);
 const siteHeaderElement = bodyElement.querySelector(`.header`);
 const siteMainElement = bodyElement.querySelector(`.main`);
 const footerStatisticsElement = bodyElement.querySelector(`.footer__statistics`);
-const movieListPresenter = new MovieListPresenter(siteMainElement, filmCardsModel, filterModel);
+const movieListPresenter = new MovieListPresenter(siteMainElement, moviesModel, filterModel, api);
 
-render(siteHeaderElement, new UserProfile(), RenderPosition.BEFORE_END);
-const filterPresenter = new FilterPresenter(siteMainElement, filterModel, filmCardsModel);
+const filterPresenter = new FilterPresenter(siteMainElement, filterModel, moviesModel);
+
+let statisticsComponent = null;
+
+const handleNavClick = (navType) => {
+  switch (navType) {
+    case MenuItem.STATS:
+      if (statisticsComponent) {
+        return;
+      }
+      movieListPresenter.destroy();
+      statisticsComponent = new StatisticsView(moviesModel.getMovies());
+      render(siteMainElement, statisticsComponent, RenderPosition.BEFORE_END);
+      break;
+    default:
+      if (statisticsComponent) {
+        remove(statisticsComponent);
+        statisticsComponent = null;
+        movieListPresenter.init();
+      }
+  }
+};
+
+filterPresenter.setNavClickHandler(handleNavClick);
 filterPresenter.init();
+
 movieListPresenter.init();
-render(footerStatisticsElement, new FooterStatisticsView(FILM_CARD_COUNT), RenderPosition.AFTER_BEGIN);
+
+api
+  .getMovies()
+  .then((movies) => {
+    moviesModel.setMovies(UpdateType.INIT, movies);
+    render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
+    render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
+  })
+  .catch(() => {
+    moviesModel.setMovies(UpdateType.INIT, []);
+    render(footerStatisticsElement, new FooterStatisticsView(moviesModel.getMovies().length), RenderPosition.AFTER_BEGIN);
+    render(siteHeaderElement, new UserProfile(moviesModel.getMovies()), RenderPosition.BEFORE_END);
+  });
+// document.querySelector(`.main-navigation`).addEventListener(`click`, handleNavClick);
+// document.querySelector(`.main-navigation__additional`).addEventListener(`click`, handleNavClick);

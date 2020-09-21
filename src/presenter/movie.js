@@ -1,16 +1,27 @@
 import FilmCardView from '../view/film.js';
 import PopupView from '../view/popup.js';
+import Api from '../api.js';
+
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
-import {UpdateType, UserAction} from '../const.js';
-import {generateComment} from '../mock/film';
+import {UpdateType, UserAction, AUTHORIZATION, END_POINT_MOVIE} from '../const.js';
 
 const ViewType = {
   DEFAULT: `DEFAULT`,
   POPUP: `POPUP`,
 };
-const bodyElement = document.querySelector(`body`);
 
-export default class FilmCard {
+export const ComponentActions = {
+  COMMENT_SAVING: `COMMENT_SAVING`,
+  COMMENT_DELETING: `COMMENT_DELETING`,
+  ABORTING: `ABORTING`,
+  ABORTING_ADD_COMMENT: `ABORTING_ADD_COMMENT`,
+  ABORTING_DELETE_COMMENT: `ABORTING_DELETE_COMMENT`,
+};
+
+const bodyElement = document.querySelector(`body`);
+const api = new Api(END_POINT_MOVIE, AUTHORIZATION);
+
+export default class Movies {
   constructor(filmListContainer, changeData, changeViewType) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
@@ -70,6 +81,50 @@ export default class FilmCard {
     }
   }
 
+  setViewState(actionType, data) {
+    const resetFormState = () => {
+      this._popupComponent.updateData({
+        textFieldDisabled: false,
+      });
+    };
+
+    switch (actionType) {
+      case ComponentActions.COMMENT_SAVING:
+        this._popupComponent.updateData({
+          textFieldDisabled: true,
+        });
+
+        break;
+      case ComponentActions.COMMENT_SAVED:
+        this._popupComponent.updateData(
+            {
+              textFieldDisabled: false,
+              localComment: {},
+            },
+            true);
+        break;
+      case ComponentActions.COMMENT_DELETING:
+        this._popupComponent.updateDeletingComments({
+          [data.id]: true,
+        });
+        break;
+      case ComponentActions.ABORTING:
+        this._filmCardComponent.shake(resetFormState);
+        this._popupComponent.shake();
+        break;
+      case ComponentActions.ABORTING_DELETE_COMMENT:
+        this._popupComponent.updateDeletingComments({
+          [data.id]: false,
+        });
+        this._filmCardComponent.shake(resetFormState);
+        this._popupComponent.shake();
+        break;
+      case ComponentActions.ABORTING_ADD_COMMENT:
+        this._popupComponent.shakeForm(resetFormState);
+        break;
+    }
+  }
+
   _closeHandler(evt) {
     if (evt) {
       const isEscKey = [`Escape`, `Esc`].includes(evt.key);
@@ -86,30 +141,49 @@ export default class FilmCard {
   }
 
   _handleFavoriteClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
+    this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
   }
 
   _handleWatchlistClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
+    this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
   }
 
   _handleWatchedClick() {
-    this._changeData(UserAction.UPDATE_FILM_CARD, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
+    this._changeData(
+        UserAction.UPDATE_FILM_CARD,
+        UpdateType.FILM_CARD,
+        Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
   }
 
   _handleDeleteComment(evt) {
-    const comments = this._filmCard.comments.filter((comment) => comment.id !== evt.target.dataset.id);
+    const comment = this._filmCard.comments.find((commentItem) => commentItem.id === evt.target.dataset.id);
 
-    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+    if (!comment) {
+      return;
+    }
+
+    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handleAddComment(comment) {
-    const comments = [...this._filmCard.comments, generateComment(comment)];
-
-    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handlePopupClick() {
+    api
+      .getComments(this._filmCard.id)
+      .then((comments) => {
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+      })
+      .catch(() => {
+        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments: []}));
+      });
     this._popupComponent.updateElement();
     render(bodyElement, this._popupComponent, RenderPosition.BEFORE_END);
     this._changeViewType();
