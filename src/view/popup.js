@@ -3,8 +3,8 @@ import moment from 'moment';
 
 import {render, replace, RenderPosition} from '../utils/render.js';
 import Smart from './smart.js';
-import {DataFormats} from '../const';
-import {SHAKE_ANIMATION_TIMEOUT} from '../const.js';
+import {DataFormats, SHAKE_ANIMATION_TIMEOUT} from '../const.js';
+
 
 const createFilmGenre = (genre) => {
   return ` <tr class="film-details__row">
@@ -70,6 +70,7 @@ const createPopup = (data) => {
     isWatchlist,
   } = movie;
   const {comment, emotion} = localComment;
+
   return `<section class="film-details">
       <form class="film-details__inner" action="" method="get">
         <div class="form-details__top-container">
@@ -80,7 +81,7 @@ const createPopup = (data) => {
             <div class="film-details__poster">
               <img class="film-details__poster-img" src="${poster}" alt="">
 
-              <p class="film-details__age">${ageRating + `+`}</p>
+              <p class="film-details__age">${ageRating}+</p>
             </div>
 
             <div class="film-details__info">
@@ -195,10 +196,9 @@ const createPopup = (data) => {
 };
 
 export default class Popup extends Smart {
-  constructor(movie, changeData) {
+  constructor(movie) {
     super();
     this._data = {movie, deletingComments: {}, textFieldDisabled: false, localComment: {}};
-    this._changeData = changeData;
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
