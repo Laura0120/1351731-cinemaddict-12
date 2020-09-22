@@ -234,44 +234,22 @@ export default class MovieList {
 
   _renderTopMovies() {
     const movies = this._moviesModel.getMovies();
-    const topRatedMovies = [...movies].sort(sortByRating);
-    const mostCommentedMovies = [...movies].sort(sortByComments);
+    const moviesSortedByRating = [...movies].sort(sortByRating);
+    const moviesSortedByComments = [...movies].sort(sortByComments);
 
-    const topRatedPool = [topRatedMovies[0], topRatedMovies[1]].filter((movie) => movie.rating > 0);
-    const mostCommentedPool = [mostCommentedMovies[0], mostCommentedMovies[1]].filter((movie) => movie.comments.length > 0);
-
-    if (topRatedPool.length > 0) {
-      render(this._contentContainerComponent, this._topRatedComponent, RenderPosition.BEFORE_END);
-      const topRatedMoviesContainerElement = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
-      topRatedPool.forEach((movie) => this._renderFilmCard(topRatedMoviesContainerElement, movie, this._topRatedPresenter));
-    }
-
-    if (mostCommentedPool.length > 0) {
-      render(this._contentContainerComponent, this._mostCommentedComponent, RenderPosition.BEFORE_END);
-      const mostComentedMoviesContainerElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
-      mostCommentedPool.forEach((movie) => this._renderFilmCard(mostComentedMoviesContainerElement, movie, this._mostCommentedPresenter));
-    }
-  }
-
-  _renderTopMovies() {
-    const movies = this._moviesModel.getMovies().slice();
-    const topRatedMovies = [...movies].sort(sortByRating);
-    const mostCommentedMovies = [...movies].sort(sortByComments);
+    const topRatedMovies = [moviesSortedByRating[0], moviesSortedByRating[1]].filter((movie) => movie.rating > 0);
+    const mostCommented = [moviesSortedByComments[0], moviesSortedByComments[1]].filter((movie) => movie.comments.length > 0);
 
     if (topRatedMovies.length > 0) {
       render(this._contentContainerComponent, this._topRatedComponent, RenderPosition.BEFORE_END);
-      const topRatedMoviesContainer = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
-      for (let i = 0; i <= 1; i++) {
-        this._renderFilmCard(topRatedMoviesContainer, topRatedMovies[i]);
-      }
+      const topRatedMoviesContainerElement = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
+      topRatedMovies.forEach((movie) => this._renderFilmCard(topRatedMoviesContainerElement, movie, this._topRatedPresenter));
     }
 
-    if (mostCommentedMovies.length > 0) {
+    if (mostCommented.length > 0) {
       render(this._contentContainerComponent, this._mostCommentedComponent, RenderPosition.BEFORE_END);
-      const mostComentedMoviesContainer = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
-      for (let i = 0; i <= 1; i++) {
-        this._renderFilmCard(mostComentedMoviesContainer, mostCommentedMovies[i]);
-      }
+      const mostComentedMoviesContainerElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
+      mostCommented.forEach((movie) => this._renderFilmCard(mostComentedMoviesContainerElement, movie, this._mostCommentedPresenter));
     }
   }
 

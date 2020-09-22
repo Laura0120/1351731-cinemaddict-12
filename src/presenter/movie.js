@@ -25,14 +25,13 @@ export default class Movie {
     this._changeViewType = changeViewType;
     this._api = api;
     this._presenter = presenter;
-    this._api = api;
 
     this._filmCardComponent = null;
     this._popupComponent = null;
     this._viewType = ViewType.DEFAULT;
 
-    this._handlePopupClick = this._handlePopupClick.bind(this);
     this._closeHandler = this._closeHandler.bind(this);
+    this._handlePopupClick = this._handlePopupClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
