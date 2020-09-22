@@ -1,7 +1,7 @@
 import moment from 'moment';
 
 import AbstractView from './abstract.js';
-import {DataFormats} from '../const';
+import {DataFormats} from '../const.js';
 
 const COUNT_SYMBOL_DESCRIPTION = 140;
 

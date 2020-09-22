@@ -1,7 +1,5 @@
 import FilmCardView from '../view/film.js';
 import PopupView from '../view/popup.js';
-import Api from '../api.js';
-
 import {render, RenderPosition, replace, remove} from '../utils/render.js';
 import {UpdateType, UserAction} from '../const.js';
 
@@ -19,13 +17,13 @@ export const ComponentActions = {
 };
 
 const bodyElement = document.querySelector(`body`);
-const api = new Api();
 
-export default class Movies {
-  constructor(filmListContainer, changeData, changeViewType) {
+export default class Movie {
+  constructor(filmListContainer, changeData, changeViewType, api) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeViewType = changeViewType;
+    this._api = api;
 
     this._filmCardComponent = null;
     this._popupComponent = null;
@@ -93,7 +91,6 @@ export default class Movies {
         this._popupComponent.updateData({
           textFieldDisabled: true,
         });
-
         break;
       case ComponentActions.COMMENT_SAVED:
         this._popupComponent.updateData(
@@ -176,13 +173,13 @@ export default class Movies {
   }
 
   _handlePopupClick() {
-    api
+    this._api
       .getComments(this._filmCard.id)
       .then((comments) => {
         this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
       })
       .catch(() => {
-        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments: []}));
+        this.setViewState(ComponentActions.ABORTING);
       });
     this._popupComponent.updateElement();
     render(bodyElement, this._popupComponent, RenderPosition.BEFORE_END);
