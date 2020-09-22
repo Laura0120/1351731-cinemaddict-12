@@ -2,6 +2,7 @@ import he from 'he';
 import moment from 'moment';
 
 import {render, replace, RenderPosition} from '../utils/render.js';
+import {isOnline} from '../utils/common.js';
 import Smart from './smart.js';
 import {DataFormats, SHAKE_ANIMATION_TIMEOUT} from '../const.js';
 
@@ -32,7 +33,7 @@ const createComment = (commentObj, isDisabled = false) => {
       <p class="film-details__comment-info">
         <span class="film-details__comment-author">${author}</span>
         <span class="film-details__comment-day">${commentDate}</span>
-        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled ? `disabled` : ``}>
+        <button class="film-details__comment-delete" data-id="${id}" ${isDisabled || !isOnline() ? `disabled` : ``}>
         ${isDisabled ? `Deleting...` : `Delete`} </button>
       </p>
     </div>
@@ -67,7 +68,7 @@ const createPopup = (data) => {
     comments,
     isWatched,
     isFavorite,
-    isWatchlist,
+    isWatchlist, textFieldDisabled
   } = movie;
   const {comment, emotion} = localComment;
 
@@ -163,27 +164,26 @@ const createPopup = (data) => {
 
               <label class="film-details__comment-label">
 
-                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" >
-                ${comment ? comment : ``}</textarea>
+                <textarea class="film-details__comment-input" placeholder="Select reaction below and write comment here" name="comment" ${textFieldDisabled || !isOnline() ? `disabled` : ``}>${comment ? comment : ``}</textarea>
               </label>
 
               <div class="film-details__emoji-list">
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile" ${!isOnline() ? `disabled` : ``}>
                 <label class="film-details__emoji-label" for="emoji-smile">
                   <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping"  ${!isOnline() ? `disabled` : ``}>
                 <label class="film-details__emoji-label" for="emoji-sleeping">
                   <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-puke" value="puke"  ${!isOnline() ? `disabled` : ``}>
                 <label class="film-details__emoji-label" for="emoji-puke">
                   <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji">
                 </label>
 
-                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
+                <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry"  ${!isOnline() ? `disabled` : ``}>
                 <label class="film-details__emoji-label" for="emoji-angry">
                   <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji">
                 </label>

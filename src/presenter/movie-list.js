@@ -3,6 +3,8 @@ import SortView from '../view/sort.js';
 import ButtonShowMoreView from '../view/show-more.js';
 import LoadingView from '../view/loading.js';
 import NoMovieView from '../view/no-movie.js';
+import TopRatedMovieList from '../view/top-rated.js';
+import MostCommentedMovieList from '../view/most-commented.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {sortByDate, sortByRating, sortByComments} from '../utils/film-card.js';
 import {filter} from '../utils/filter.js';
@@ -30,6 +32,8 @@ export default class MovieList {
 
     this._loadingComponent = new LoadingView();
     this._noMovieComponent = new NoMovieView();
+    this._topRatedComponent = new TopRatedMovieList();
+    this._mostCommentedComponent = new MostCommentedMovieList();
 
     this._handleViewAction = this._handleViewAction.bind(this);
     this._handleFilmCardChange = this._handleFilmCardChange.bind(this);
@@ -148,10 +152,12 @@ export default class MovieList {
       case UserAction.UPDATE_FILM_CARD:
         this._api
           .updateMovies(data)
-          .then((response) =>
-            this._api.getComments(response.id).then((comments) => {
-              return Object.assign({}, response, {comments});
-            })).then((movie) => {
+          .then((movie) => {
+            return this._api.getComments(movie.id).then((comments) => {
+              return Object.assign({}, movie, {comments});
+            });
+          })
+          .then((movie) => {
             this._moviesModel.updateMovies(updateType, movie);
           })
           .catch(() => {
@@ -244,6 +250,28 @@ export default class MovieList {
       render(this._contentContainerComponent, this._mostCommentedComponent, RenderPosition.BEFORE_END);
       const mostComentedMoviesContainerElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
       mostCommentedPool.forEach((movie) => this._renderFilmCard(mostComentedMoviesContainerElement, movie, this._mostCommentedPresenter));
+    }
+  }
+
+  _renderTopMovies() {
+    const movies = this._moviesModel.getMovies().slice();
+    const topRatedMovies = [...movies].sort(sortByRating);
+    const mostCommentedMovies = [...movies].sort(sortByComments);
+
+    if (topRatedMovies.length > 0) {
+      render(this._contentContainerComponent, this._topRatedComponent, RenderPosition.BEFORE_END);
+      const topRatedMoviesContainer = this._topRatedComponent.getElement().querySelector(`.films-list__container`);
+      for (let i = 0; i <= 1; i++) {
+        this._renderFilmCard(topRatedMoviesContainer, topRatedMovies[i]);
+      }
+    }
+
+    if (mostCommentedMovies.length > 0) {
+      render(this._contentContainerComponent, this._mostCommentedComponent, RenderPosition.BEFORE_END);
+      const mostComentedMoviesContainer = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
+      for (let i = 0; i <= 1; i++) {
+        this._renderFilmCard(mostComentedMoviesContainer, mostCommentedMovies[i]);
+      }
     }
   }
 

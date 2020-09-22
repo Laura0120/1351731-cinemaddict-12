@@ -14,22 +14,32 @@ const getWeightForNullDate = (dateA, dateB) => {
   return null;
 };
 
-export const sortByDate = (filmCardA, filmCardB) => {
-  const weight = getWeightForNullDate(filmCardA.date, filmCardB.date);
+export const sortByDate = (movieA, movieB) => {
+  const weight = getWeightForNullDate(movieA.date, movieB.date);
 
   if (weight !== null) {
     return weight;
   }
 
-  return filmCardB.date.diff(filmCardA.date, `seconds`);
+  return movieB.date.diff(movieA.date, `seconds`);
 };
 
-export const sortByRating = (filmCardA, filmCardB) => {
-  const weight = getWeightForNullDate(filmCardA.rating, filmCardB.rating);
+export const sortByRating = (movieA, movieB) => {
+  const weight = getWeightForNullDate(movieA.rating, movieB.rating);
 
   if (weight !== null) {
     return weight;
   }
 
-  return filmCardB.rating - filmCardA.rating;
+  return movieB.rating - movieA.rating;
+};
+
+export const sortByComments = (movieA, movieB) => {
+  const weight = getWeightForNullDate(movieA.comments, movieB.comments);
+
+  if (weight !== null) {
+    return weight;
+  }
+
+  return movieB.comments.length - movieA.comments.length;
 };

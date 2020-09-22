@@ -26,3 +26,7 @@ export const getProfileRating = (movies) => {
 
   return profileRatingt;
 };
+
+export const isOnline = () => {
+  return window.navigator.onLine;
+};
