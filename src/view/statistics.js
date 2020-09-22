@@ -46,7 +46,7 @@ const renderGenreChart = (genreCtx, data) => {
     uniqGenres.push(genre);
     movieByGenreCounts.push(count);
   });
-  // Обязательно рассчитайте высоту canvas, она зависит от количества элементов диаграммы
+
   genreCtx.height = BAR_HEIGHT * uniqGenres.length;
 
   return new Chart(genreCtx, {

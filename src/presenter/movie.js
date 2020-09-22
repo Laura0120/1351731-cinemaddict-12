@@ -19,18 +19,19 @@ export const ComponentActions = {
 const bodyElement = document.querySelector(`body`);
 
 export default class Movie {
-  constructor(filmListContainer, changeData, changeViewType, api) {
+  constructor(filmListContainer, changeData, changeViewType, api, presenter) {
     this._filmListContainer = filmListContainer;
     this._changeData = changeData;
     this._changeViewType = changeViewType;
     this._api = api;
+    this._presenter = presenter;
 
     this._filmCardComponent = null;
     this._popupComponent = null;
     this._viewType = ViewType.DEFAULT;
 
-    this._handlePopupClick = this._handlePopupClick.bind(this);
     this._closeHandler = this._closeHandler.bind(this);
+    this._handlePopupClick = this._handlePopupClick.bind(this);
     this._handleFavoriteClick = this._handleFavoriteClick.bind(this);
     this._handleWatchlistClick = this._handleWatchlistClick.bind(this);
     this._handleWatchedClick = this._handleWatchedClick.bind(this);
@@ -40,7 +41,6 @@ export default class Movie {
 
   init(filmCard) {
     this._filmCard = filmCard;
-
     const prevfilmCardComponent = this._filmCardComponent;
     const prevPopupComponent = this._popupComponent;
 
@@ -50,7 +50,7 @@ export default class Movie {
     this._filmCardComponent.clickHandler(this._handleWatchlistClick, `.film-card__controls-item--add-to-watchlist`);
     this._filmCardComponent.clickHandler(this._handleWatchedClick, `.film-card__controls-item--mark-as-watched`);
 
-    this._popupComponent = new PopupView(filmCard, this._changeData);
+    this._popupComponent = new PopupView(filmCard);
     this._popupComponent.setFavoriteClickHandler(this._handleFavoriteClick);
     this._popupComponent.setWatchlistClickHandler(this._handleWatchlistClick);
     this._popupComponent.setWatchedClickHandler(this._handleWatchedClick);
@@ -62,6 +62,7 @@ export default class Movie {
       render(this._filmListContainer, this._filmCardComponent, RenderPosition.BEFORE_END);
       return;
     }
+
     replace(this._filmCardComponent, prevfilmCardComponent);
     replace(this._popupComponent, prevPopupComponent);
     remove(prevfilmCardComponent);
@@ -139,6 +140,7 @@ export default class Movie {
 
   _handleFavoriteClick() {
     this._changeData(
+        this._presenter,
         UserAction.UPDATE_FILM_CARD,
         UpdateType.FILM_CARD,
         Object.assign({}, this._filmCard, {isFavorite: !this._filmCard.isFavorite}));
@@ -146,6 +148,7 @@ export default class Movie {
 
   _handleWatchlistClick() {
     this._changeData(
+        this._presenter,
         UserAction.UPDATE_FILM_CARD,
         UpdateType.FILM_CARD,
         Object.assign({}, this._filmCard, {isWatchlist: !this._filmCard.isWatchlist}));
@@ -153,6 +156,7 @@ export default class Movie {
 
   _handleWatchedClick() {
     this._changeData(
+        this._presenter,
         UserAction.UPDATE_FILM_CARD,
         UpdateType.FILM_CARD,
         Object.assign({}, this._filmCard, {isWatched: !this._filmCard.isWatched}));
@@ -165,18 +169,18 @@ export default class Movie {
       return;
     }
 
-    this._changeData(UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
+    this._changeData(this._presenter, UserAction.DELETE_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handleAddComment(comment) {
-    this._changeData(UserAction.ADD_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
+    this._changeData(this._presenter, UserAction.ADD_COMMENT, UpdateType.FILM_CARD, {movieId: this._filmCard.id, comment});
   }
 
   _handlePopupClick() {
     this._api
       .getComments(this._filmCard.id)
       .then((comments) => {
-        this._changeData(UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
+        this._changeData(this._presenter, UserAction.LOAD_COMMENTS, UpdateType.FILM_CARD, Object.assign({}, this._filmCard, {comments}));
       })
       .catch(() => {
         this.setViewState(ComponentActions.ABORTING);
