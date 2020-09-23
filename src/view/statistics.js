@@ -225,13 +225,13 @@ export default class Statistics extends SmartView {
 
     this._genreChart = null;
 
-    this._statFilterClickhandle = this._statFilterClickhandle.bind(this);
+    this._statFilterClickHandler = this._statFilterClickHandler.bind(this);
 
     this._setChart();
     this._setInnerHandlers();
   }
 
-  _statFilterClickhandle(evt) {
+  _statFilterClickHandler(evt) {
     if (evt.target.value === this._data.currentFilter) {
       return;
     }
@@ -278,7 +278,7 @@ export default class Statistics extends SmartView {
   _setInnerHandlers() {
     this.getElement()
       .querySelectorAll(`.statistic__filters-input`)
-      .forEach((element) => element.addEventListener(`click`, this._statFilterClickhandle));
+      .forEach((element) => element.addEventListener(`click`, this._statFilterClickHandler));
   }
 
   _setChart() {
