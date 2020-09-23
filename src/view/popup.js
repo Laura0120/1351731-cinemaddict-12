@@ -205,7 +205,7 @@ export default class Popup extends Smart {
     this._watchedClickHandle = this._watchedClickHandle.bind(this);
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
     this._deleteButtonClickHandle = this._deleteButtonClickHandle.bind(this);
-    this._CommentAddHandle = this._CommentAddHandle.bind(this);
+    this._сommentAddHandle = this._сommentAddHandle.bind(this);
 
     this._setInnerHandlers();
   }
@@ -225,7 +225,7 @@ export default class Popup extends Smart {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, this._emojiClickHandler);
-    this.getElement().addEventListener(`keydown`, this._CommentAddHandle);
+    this.getElement().addEventListener(`keydown`, this._сommentAddHandle);
   }
 
   _сloseClickHandler(evt) {
@@ -274,7 +274,7 @@ export default class Popup extends Smart {
     this._data.localComment.emotion = emotion;
   }
 
-  _CommentAddHandle(evt) {
+  _сommentAddHandle(evt) {
     if (![`Enter`, `Command`].includes(evt.key) || !evt.ctrlKey) {
       return;
     }
