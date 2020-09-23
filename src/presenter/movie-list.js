@@ -1,10 +1,10 @@
-import ContentContainerView from '../view/container.js';
+import ContentContainerView from '../view/content-container.js';
 import SortView from '../view/sort.js';
-import ButtonShowMoreView from '../view/show-more.js';
+import ButtonShowMoreView from '../view/button-show-more.js';
 import LoadingView from '../view/loading.js';
 import NoMovieView from '../view/no-movie.js';
-import TopRatedMovieList from '../view/top-rated.js';
-import MostCommentedMovieList from '../view/most-commented.js';
+import TopRatedMovieList from '../view/top-rated-movie-list.js';
+import MostCommentedMovieList from '../view/most-commented-movie-list.js';
 import {render, RenderPosition, remove, replace} from '../utils/render.js';
 import {sortByDate, sortByRating, sortByComments} from '../utils/film-card.js';
 import {filter} from '../utils/filter.js';
@@ -238,7 +238,7 @@ export default class MovieList {
     const moviesSortedByComments = [...movies].sort(sortByComments);
 
     const topRatedMovies = [moviesSortedByRating[0], moviesSortedByRating[1]].filter((movie) => movie.rating > 0);
-    const mostCommented = [moviesSortedByComments[0], moviesSortedByComments[1]].filter((movie) => movie.comments.length > 0);
+    const mostCommentedMovies = [moviesSortedByComments[0], moviesSortedByComments[1]].filter((movie) => movie.comments.length > 0);
 
     if (topRatedMovies.length > 0) {
       render(this._contentContainerComponent, this._topRatedComponent, RenderPosition.BEFORE_END);
@@ -246,10 +246,10 @@ export default class MovieList {
       topRatedMovies.forEach((movie) => this._renderFilmCard(topRatedMoviesContainerElement, movie, this._topRatedPresenter));
     }
 
-    if (mostCommented.length > 0) {
+    if (mostCommentedMovies.length > 0) {
       render(this._contentContainerComponent, this._mostCommentedComponent, RenderPosition.BEFORE_END);
       const mostComentedMoviesContainerElement = this._mostCommentedComponent.getElement().querySelector(`.films-list__container`);
-      mostCommented.forEach((movie) => this._renderFilmCard(mostComentedMoviesContainerElement, movie, this._mostCommentedPresenter));
+      mostCommentedMovies.forEach((movie) => this._renderFilmCard(mostComentedMoviesContainerElement, movie, this._mostCommentedPresenter));
     }
   }
 

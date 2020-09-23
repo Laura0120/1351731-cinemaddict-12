@@ -24,15 +24,15 @@ export default class Provider {
     if (isOnline()) {
       return this._api.getMovies()
         .then((movies) => {
-          const items = createStoreStructure(movies.map(MoviesModel.adaptToServer));
-          this._store.setItems({movies: items});
+          const items = createStoreStructure(movies.map((movie) => MoviesModel.adaptToServer(movie)));
+          this._store.setItems(items);
           return movies;
         });
     }
 
     const storeMovies = Object.values(this._store.getItems());
 
-    return Promise.resolve(storeMovies.map(MoviesModel.adaptToClient));
+    return Promise.resolve(storeMovies.map((movie) => MoviesModel.adaptToClient(movie)));
   }
 
   getComments(movieId) {
@@ -73,7 +73,7 @@ export default class Provider {
         .then((response) => {
           const updatedMovies = getSyncedMovies(response.updated);
           const items = createStoreStructure([...updatedMovies]);
-          this._store.setItems({movies: items});
+          this._store.setItems(items);
         });
     }
     return Promise.reject(new Error(`Sync data failed`));

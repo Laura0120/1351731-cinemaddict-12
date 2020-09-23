@@ -1,4 +1,4 @@
-import UserProfile from './view/profile.js';
+import UserProfile from './view/user-profile.js';
 import FooterStatisticsView from './view/footer-statistics.js';
 import StatisticsView from './view/statistics.js';
 import FilterPresenter from './presenter/filter.js';
