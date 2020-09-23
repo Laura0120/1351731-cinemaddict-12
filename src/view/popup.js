@@ -200,12 +200,12 @@ export default class Popup extends Smart {
     super();
     this._data = {movie, deletingComments: {}, textFieldDisabled: false, localComment: {}};
     this._сloseClickHandler = this._сloseClickHandler.bind(this);
-    this._favoriteClickHandle = this._favoriteClickHandle.bind(this);
-    this._watchlistClickHandle = this._watchlistClickHandle.bind(this);
-    this._watchedClickHandle = this._watchedClickHandle.bind(this);
+    this._favoriteClickHandler = this._favoriteClickHandler.bind(this);
+    this._watchlistClickHandler = this._watchlistClickHandler.bind(this);
+    this._watchedClickHandler = this._watchedClickHandler.bind(this);
     this._emojiClickHandler = this._emojiClickHandler.bind(this);
-    this._deleteButtonClickHandle = this._deleteButtonClickHandle.bind(this);
-    this._сommentAddHandle = this._сommentAddHandle.bind(this);
+    this._deleteButtonClickHandler = this._deleteButtonClickHandler.bind(this);
+    this._сommentAddHandler = this._сommentAddHandler.bind(this);
 
     this._setInnerHandlers();
   }
@@ -225,26 +225,26 @@ export default class Popup extends Smart {
 
   _setInnerHandlers() {
     this.getElement().querySelector(`.film-details__emoji-list`).addEventListener(`change`, this._emojiClickHandler);
-    this.getElement().addEventListener(`keydown`, this._сommentAddHandle);
+    this.getElement().addEventListener(`keydown`, this._сommentAddHandler);
   }
 
   _сloseClickHandler(evt) {
     this._callback.popupCloseClick(evt);
   }
 
-  _favoriteClickHandle() {
+  _favoriteClickHandler() {
     this._callback.favoriteClick();
   }
 
-  _watchlistClickHandle() {
+  _watchlistClickHandler() {
     this._callback.watchlistClick();
   }
 
-  _watchedClickHandle() {
+  _watchedClickHandler() {
     this._callback.watchedClick();
   }
 
-  _deleteButtonClickHandle(evt) {
+  _deleteButtonClickHandler(evt) {
     evt.preventDefault();
     this._callback.deleteClick(evt);
   }
@@ -274,7 +274,7 @@ export default class Popup extends Smart {
     this._data.localComment.emotion = emotion;
   }
 
-  _сommentAddHandle(evt) {
+  _сommentAddHandler(evt) {
     if (![`Enter`, `Command`].includes(evt.key) || !evt.ctrlKey) {
       return;
     }
@@ -294,7 +294,7 @@ export default class Popup extends Smart {
     this.getElement()
       .querySelectorAll(`.film-details__comment-delete`)
       .forEach((button) => {
-        button.addEventListener(`click`, this._deleteButtonClickHandle);
+        button.addEventListener(`click`, this._deleteButtonClickHandler);
       });
   }
 
@@ -305,17 +305,17 @@ export default class Popup extends Smart {
 
   setFavoriteClickHandler(callback) {
     this._callback.favoriteClick = callback;
-    this.getElement().querySelector(`#favorite`).addEventListener(`change`, this._favoriteClickHandle);
+    this.getElement().querySelector(`#favorite`).addEventListener(`change`, this._favoriteClickHandler);
   }
 
   setWatchlistClickHandler(callback) {
     this._callback.watchlistClick = callback;
-    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, this._watchlistClickHandle);
+    this.getElement().querySelector(`#watchlist`).addEventListener(`change`, this._watchlistClickHandler);
   }
 
   setWatchedClickHandler(callback) {
     this._callback.watchedClick = callback;
-    this.getElement().querySelector(`#watched`).addEventListener(`change`, this._watchedClickHandle);
+    this.getElement().querySelector(`#watched`).addEventListener(`change`, this._watchedClickHandler);
   }
 
   updateDeletingComments(data) {
